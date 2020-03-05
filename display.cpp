@@ -48,7 +48,6 @@ void Display::DrawHXBM(u8g2_uint_t x, u8g2_uint_t y, u8g2_uint_t width, u8g2_uin
   x = width - 1;
   int i = 0;
 
-Serial.printf("line %d|\r", y);
 
   while (blen > 0)
   {
@@ -65,13 +64,11 @@ Serial.printf("line %d|\r", y);
 
     }
 
-    Serial.printf("%#X", *b);
     blen--;
     mask = 1;
     b++;
   }
 
-Serial.println("|");
 /*
   while (len > 0)
   {
