@@ -97,19 +97,19 @@ void udp_loop()
         }
 
       case PACKET_TOGGLE_DISPLAY:
-      {
-        bDisplay = !bDisplay;
-        char ti = bDisplay ? 1 : 0;
+        {
+          bDisplay = !bDisplay;
+          char ti = bDisplay ? 1 : 0;
 
-        if (bDisplay)
-          display.showTest();
-        else
-          display.clearDisplay();
-        
-        p = buildPacket(PACKET_TOGGLE_DISPLAY, (char*)&ti, 1);
-        sendPacket(p, udp_server.remoteIP(), udp_server.remotePort());
-        break;
-      }
+          if (bDisplay)
+            display.showTest();
+          else
+            display.clearDisplay();
+
+          p = buildPacket(PACKET_TOGGLE_DISPLAY, (char*)&ti, 1);
+          sendPacket(p, udp_server.remoteIP(), udp_server.remotePort());
+          break;
+        }
       case PACKET_GET_INFO:
         {
           char buf[32] = {0};
@@ -120,28 +120,44 @@ void udp_loop()
         }
 
       case PACKET_DISPLAY_IMG:
-        Serial.printf("data len : %d\n", rxp.len);
-        uint8_t* bmp = new uint8_t[rxp.len];
-        memcpy(bmp, rxp.data, rxp.len);
+        {
+          Serial.printf("data len : %d\n", rxp.len);
+          uint8_t* bmp = new uint8_t[rxp.len];
+          memcpy(bmp, rxp.data, rxp.len);
 
-        /*
-          uint8_t hash[20];
-          sha1(bmp, rxp.len, &hash[0]);
+          /*
+            uint8_t hash[20];
+            sha1(bmp, rxp.len, &hash[0]);
 
-          Serial.print("SHA1:");
+            Serial.print("SHA1:");
 
-          for (uint16_t i = 0; i < 20; i++) {
-          Serial.printf("%02x", hash[i]);
+            for (uint16_t i = 0; i < 20; i++) {
+            Serial.printf("%02x", hash[i]);
+            }
+            Serial.println();
+            Serial.printf("data is : %x %x %x %x \r", bmp[0], bmp[1], bmp[2], bmp[3]);
+          */
+
+          //display.sendBmp(bmp, rxp.len);
+
+          display.drawBmp(bmp);
+          delete[] bmp;
+          break;
+        }
+      case PACKET_DISPLAY_INFO:
+        {
+          char* js = new char[rxp.len];
+          memcpy(js, rxp.data, rxp.len);
+          StaticJsonDocument<512> doc;
+          DeserializationError error = deserializeJson(doc, js);
+          if (error)
+          {
+            Serial.println("parse json error!");
+            return;
           }
-          Serial.println();
-          Serial.printf("data is : %x %x %x %x \r", bmp[0], bmp[1], bmp[2], bmp[3]);
-        */
-
-        //display.sendBmp(bmp, rxp.len);
-
-        display.drawBmp(bmp);
-        delete[] bmp;
-        break;
+          delete[] js;
+          break;
+        }
 
     }
 

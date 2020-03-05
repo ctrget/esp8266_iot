@@ -157,7 +157,7 @@ void Display::drawXBM(u8g2_uint_t x, u8g2_uint_t y, u8g2_uint_t w, u8g2_uint_t h
 void Display::drawBmp(uint8_t* bmp)
 {
   u8g2.clearBuffer();
-  this->drawXBM(0, 0, 88, 64, bmp);
+  u8g2.drawXBM(0, 0, 128, 64, bmp);
   u8g2.sendBuffer();
 
 
