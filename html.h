@@ -4,8 +4,7 @@ static const String indexPage = "<!DOCTYPE html>\
     <meta charset=\"UTF-8\">\
     <meta name=\"viewport\" content=\"width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover\">\
     <title>WeUI</title>\
-    <link rel=\"stylesheet\" href=\"https://weui.io/style/weui.css\"/>\
-  <link rel=\"stylesheet\" href=\"https://weui.io/example.css\"/>\
+    <link rel=\"stylesheet\" href=\"https://cdn.bootcss.com/weui/2.2.0/style/weui.min.css\"/>\
   \
 </head>\
 <body ontouchstart>\

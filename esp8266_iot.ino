@@ -109,12 +109,12 @@ void setup(void) {
   char wifi_ssid[32], wifi_password[16];
   bool bssid = readConfig("/config.json", "wifi_ssid", wifi_ssid);
   bool bpass = readConfig("/config.json", "wifi_password", wifi_password);
-  bNeedInit = bssid && bpass;
+  bNeedInit = !(bssid && bpass);
 
   Serial.printf("ssid: %s pass: %s\r", wifi_ssid, wifi_password);
 
 
-  if (!bNeedInit)
+  if (bNeedInit)
   {
     initAP();
     Serial.println("Init AP mode!!!!!!!!!!!!!!");

@@ -11,14 +11,16 @@ ESP8266WebServer server(http_port);
 
 void handleRoot()
 {
-  digitalWrite(LED_BUILTIN, 0);
 
-  if (!bNeedInit)
+
+  if (bNeedInit)
   {
+    Serial.println("init");
     handleInit();
   }
   else
   {
+    Serial.println("index");
     server.send(200, "text/html", indexPage);
   }
 
