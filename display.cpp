@@ -40,121 +40,13 @@ void Display::clearDisplay()
   u8g2.clearDisplay();
 }
 
-void Display::DrawHXBM(u8g2_uint_t x, u8g2_uint_t y, u8g2_uint_t width, u8g2_uint_t blen, const uint8_t *b)
-{
-  uint8_t mask;
-  mask = 1;
-
-  x = width - 1;
-  int i = 0;
 
 
-  while (blen > 0)
-  {
-    for (int i = 0; i < 8; i++)
-    {
-      
-      if ( *b & mask )
-      {
-        u8g2.drawHLine(x, y, 1);
-      }
 
-      mask <<= 1;
-      x--;
-
-    }
-
-    blen--;
-    mask = 1;
-    b++;
-  }
-
-/*
-  while (len > 0)
-  {
-    //Serial.printf("print hline y:%d  line%d\r", y, len);
-
-    if ( *b & mask )
-    {
-
-      u8g2.drawHLine(x, y, 1);
-
-    }
-
-    x--;
-    mask <<= 1;
-
-    if ( mask == 0 )
-    {
-      mask = 1;
-      b++;
-    }
-
-    len--;
-  }
-*/
-
-  /*
-    while (len > 0)
-    {
-     if ( *b & mask )
-     {
-       u8g2.drawHLine(x, y, 1);
-     }
-
-     x++;
-     mask <<= 1;
-
-     if ( mask == 0 )
-     {
-       mask = 1;
-       b++;
-     }
-
-     len--;
-    }
-  */
-
-}
-
-void Display::drawXBM(u8g2_uint_t x, u8g2_uint_t y, u8g2_uint_t w, u8g2_uint_t h, const uint8_t *bitmap)
-{
-  u8g2_uint_t blen;
-  blen = (w / 8 + 3) / 4 * 4;
-  //blen = w;
-  //blen += 7;
-  //blen >>= 3;
-
-  
-
-  y = h - 1;
-
-
-  while ( h > 0 )
-  {
-    this->DrawHXBM(x, y, w, blen, bitmap);
-    bitmap += blen;
-    y--;
-    h--;
-  }
-
-  /*
-    while ( h > 0 )
-    {
-    this->DrawHXBM(x, y, w, bitmap);
-    bitmap += blen;
-    y++;
-    h--;
-    }
-
-  */
-}
-
-
-void Display::drawBmp(uint8_t* bmp)
+void Display::drawBmp(uint8_t width, uint8_t height, uint8_t* bmp)
 {
   u8g2.clearBuffer();
-  u8g2.drawXBM(0, 0, 128, 64, bmp);
+  u8g2.drawXBM(0, 0, width, height, bmp);
   u8g2.sendBuffer();
 
 

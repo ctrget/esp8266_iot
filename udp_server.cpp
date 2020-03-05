@@ -123,24 +123,14 @@ void udp_loop()
         {
           Serial.printf("data len : %d\n", rxp.len);
           uint8_t* bmp = new uint8_t[rxp.len];
-          memcpy(bmp, rxp.data, rxp.len);
+          uint8_t width, height;
+          memcpy(&width, rxp.data, 1);
+          memcpy(&height, rxp.data + 1, 1);
+          memcpy(bmp, rxp.data + 2, rxp.len - 2);
 
-          /*
-            uint8_t hash[20];
-            sha1(bmp, rxp.len, &hash[0]);
-
-            Serial.print("SHA1:");
-
-            for (uint16_t i = 0; i < 20; i++) {
-            Serial.printf("%02x", hash[i]);
-            }
-            Serial.println();
-            Serial.printf("data is : %x %x %x %x \r", bmp[0], bmp[1], bmp[2], bmp[3]);
-          */
-
-          //display.sendBmp(bmp, rxp.len);
-
-          display.drawBmp(bmp);
+          Serial.printf("width:%d height:%d len:%d \r", width, height, rxp.len - 2);
+          
+          display.drawBmp(width, height, bmp);
           delete[] bmp;
           break;
         }
