@@ -1,7 +1,8 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-#include <U8g2lib.h>
+
+
 
 class Display
 {
@@ -12,7 +13,6 @@ class Display
   void drawBmp(uint8_t width, uint8_t height, uint8_t* bmp);
   void clearDisplay();
   private:
-  uint32_t _bufferLen;
 };
 
 

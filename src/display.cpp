@@ -1,6 +1,7 @@
 #include "esp8266_iot.h"
 #include "display.h"
 
+
 #define SCL 4
 #define SDA 5
 
@@ -11,7 +12,7 @@ unsigned long dtime = 0;
 
 Display::Display()
 {
-  this->_bufferLen = 0;
+
 }
 
 void Display::init()
@@ -21,14 +22,20 @@ void Display::init()
   u8g2.setBitmapMode(false);
   u8g2.setDrawColor(1);
   //u8g2.setDisplayRotation(U8G2_R0);
+  u8g2.enableUTF8Print();	
 }
 
 void Display::showTest()
 {
 
+  u8g2.setFont(u8g2_font_wqy12_t_chinese2); 
   u8g2.clearBuffer();
-  u8g2.setFont(u8g2_font_ncenB08_tr);
-  u8g2.drawStr(0, 10, "Hello World!");
+  u8g2.setCursor(0, 15);
+  u8g2.print("Hello World!");
+  u8g2.setCursor(0, 40);
+  u8g2.print("你好世界");	
+  Serial.println("caaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+
   u8g2.sendBuffer();
 
 
