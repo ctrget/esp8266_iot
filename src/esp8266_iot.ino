@@ -26,7 +26,7 @@ void btn_click()
   else
     display.clearDisplay();
   //u8g2.clearDisplay();
-
+  
 
 }
 
@@ -166,11 +166,11 @@ void setup(void) {
   Serial.println("Contacting Time Server");
   configTime(3600 * timezone, daysavetime * 3600, "cn.ntp.org.cn", "0.pool.ntp.org", "1.pool.ntp.org");
 
-  //struct tm tmstruct ;
-  //(2000);
-  //tmstruct.tm_year = 0;
-  //getLocalTime(&tmstruct, 5000);
-  //Serial.printf("\nNow is : %d-%02d-%02d %02d:%02d:%02d\n", (tmstruct.tm_year) + 1900, (tmstruct.tm_mon) + 1, tmstruct.tm_mday, tmstruct.tm_hour, tmstruct.tm_min, tmstruct.tm_sec);
+  struct tm tmstruct ;
+  delay(2000);
+  tmstruct.tm_year = 0;
+  getLocalTime(&tmstruct, 5000);
+  Serial.printf("\nNow is : %d-%02d-%02d %02d:%02d:%02d\n", (tmstruct.tm_year) + 1900, (tmstruct.tm_mon) + 1, tmstruct.tm_mday, tmstruct.tm_hour, tmstruct.tm_min, tmstruct.tm_sec);
 
 }
 

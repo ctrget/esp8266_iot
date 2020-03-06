@@ -37,6 +37,13 @@ void sendPacket(Packet* p, IPAddress ip, uint32_t port)
 }
 
 
+template <class T>
+
+int getArrayLen(T& array)
+{
+  return (sizeof(array) / sizeof(array[0]));
+}
+
 void udp_loop()
 {
   Packet* p;
@@ -71,14 +78,14 @@ void udp_loop()
                   udp_server.destinationIP().toString().c_str(), udp_server.localPort(),
                   ESP.getFreeHeap());
 
-    //Serial.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    //Serial.println(len);
+
     memcpy(&rxp, rxBuffer, n);
 
 
 
     switch (rxp.cmd)
     {
+
       case PACKET_REBOOT:
         {
           p = buildPacket(PACKET_REBOOT);
@@ -136,17 +143,69 @@ void udp_loop()
         }
       case PACKET_DISPLAY_INFO:
         {
+          
           char* js = new char[rxp.len];
           memcpy(js, rxp.data, rxp.len);
-          StaticJsonDocument<512> doc;
+         
+
+          DynamicJsonDocument doc(1024);
+           
           DeserializationError error = deserializeJson(doc, js);
+
           if (error)
           {
             Serial.println("parse json error!");
             return;
           }
+
+ 
+
+          const char* cpuClock = doc["SCPUCLK"];
+          const char* cpuLoad = doc["SCPUUTI"];
+          const char* memUsage = doc["SMEMUTI"];
+          const char* gpuClock = doc["SGPU1CLK"];
+          const char* gpuLoad = doc["SGPU1UTI"];
+          const char* vmemUsage = doc["SVMEMUSAGE"];
+          const char* boardTemp = doc["TMOBO"];
+          const char* cpuTemp = doc["TCPU"];
+          const char* gpuTemp = doc["TGPU1DIO"];
+          const char* cpuSpeed = doc["FCPU"];
+          const char* gpuSpeed = doc["FGPU1"];
+          const char* cpuVolt = doc["VCPU"];
+          const char* gpuVolt = doc["VGPU1"];
+          const char* cpuPower = doc["PCPUPKG"];
+
+
+          char* hddTemp;
+          const char* hl = doc["hl"];
+
+          if (hl)
+          {
+            int hddCount = atoi(hl);
+
+            if (hddCount <= 0)
+              return;
+
+            hddTemp = new char[hddCount];
+            
+            for (int i = 0; i < hddCount; i++)
+            {
+              char hddName[6];
+              sprintf(hddName, "THDD%d \r", i + 1);
+              Serial.printf("HDD: %s", hddName);
+              hddTemp[i] = doc[hddName];
+            }
+
+
+          }
+
+
           delete[] js;
+          delete[] hddTemp;
+          
+
           break;
+          
         }
 
     }

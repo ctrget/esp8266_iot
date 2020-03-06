@@ -19,8 +19,7 @@ void Display::init()
 {
   u8g2.begin();
   //true 背景透明
-  u8g2.setBitmapMode(false);
-  u8g2.setDrawColor(1);
+
   //u8g2.setDisplayRotation(U8G2_R0);
   u8g2.enableUTF8Print();	
 }
@@ -28,6 +27,7 @@ void Display::init()
 void Display::showTest()
 {
 
+  u8g2.setDrawColor(1);
   u8g2.setFont(u8g2_font_wqy12_t_chinese2); 
   u8g2.clearBuffer();
   u8g2.setCursor(0, 15);
@@ -52,6 +52,8 @@ void Display::clearDisplay()
 
 void Display::drawBmp(uint8_t width, uint8_t height, uint8_t* bmp)
 {
+  u8g2.setDrawColor(0);
+  u8g2.setBitmapMode(false);
   u8g2.clearBuffer();
   u8g2.drawXBM(0, 0, width, height, bmp);
   u8g2.sendBuffer();
