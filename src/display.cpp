@@ -23,6 +23,7 @@ void Display::init()
   this->_fontSize = 12;
   this->_strPos = this->_fontSize;
   u8g2.enableUTF8Print();	
+  u8g2.setBusClock(400000);
 }
 
 
