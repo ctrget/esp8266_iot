@@ -195,15 +195,9 @@ void udp_loop()
               Serial.printf("HDD: %s", hddName);
               hddTemp[i] = doc[hddName];
             }
-
-
           }
-
-
           delete[] js;
           delete[] hddTemp;
-          
-
           break;
           
         }
