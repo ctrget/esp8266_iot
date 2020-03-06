@@ -2,13 +2,14 @@
 
 unsigned long otime = 0;
 void ICACHE_RAM_ATTR btn_click();
+struct tm localTime;
 bool bNeedInit = true;
 bool bDisplay = false;
 Display display;
 
+
 void btn_click()
 {
-  Serial.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!click");
   
   int gpio_d5 = digitalRead(D5);
 
@@ -31,6 +32,15 @@ void btn_click()
 }
 
 
+void getNtpTime()
+{
+  long timezone = 8;
+  byte daysavetime = 0;
+  display.printf("Connecting Time Server");
+  configTime(3600 * timezone, daysavetime * 3600, "ntp.ntsc.ac.cn", "ntp.aliyun.com", "time1.cloud.tencent.com");
+  display.printf("%d-%02d-%02d %02d:%02d:%02d", (localTime.tm_year) + 1900, (localTime.tm_mon) + 1, localTime.tm_mday, localTime.tm_hour, localTime.tm_min, localTime.tm_sec);
+}
+
 int get_mem()
 {
   uint32_t free;
@@ -44,29 +54,32 @@ int get_mem()
 }
 
 
-bool getLocalTime(struct tm * info, uint32_t ms)
+bool getLocalTime()
 {
-  uint32_t count = ms / 10;
+  uint32_t count = 3000 / 10;
   time_t now;
 
   time(&now);
-  localtime_r(&now, info);
+  localtime_r(&now, &localTime);
 
-  if (info->tm_year > (2016 - 1900))
+  if (localTime.tm_year > (2016 - 1900))
   {
     return true;
   }
 
+/*
   while (count--)
   {
     delay(10);
     time(&now);
-    localtime_r(&now, info);
-    if (info->tm_year > (2016 - 1900))
+    localtime_r(&now, &localTime);
+    if (localTime.tm_year > (2016 - 1900))
     {
       return true;
     }
   }
+  */
+ 
   return false;
 }
 
@@ -78,15 +91,17 @@ void initAP()
   WiFi.softAPConfig(IPAddress(192, 168, 1, 1), IPAddress(192, 168, 1, 1), IPAddress(255, 255, 255, 0));
   WiFi.softAP("8266", "12345678");
   IPAddress myIP = WiFi.softAPIP();
-  Serial.println("AP IP address: ");
-  Serial.println(myIP);
+  display.printf("AP IP address: %s", myIP.toString().c_str());
 }
 
 
-void setup(void) {
+void setup(void) 
+{
+
   Serial.begin(115200);
   pinMode(D5, INPUT);
   attachInterrupt(digitalPinToInterrupt(D5), btn_click, RISING);
+  localTime.tm_year = 0;
   display.init();
   int timeout = 0;
 
@@ -95,12 +110,11 @@ void setup(void) {
   digitalWrite(LED_BUILTIN, 1);
 
 
-
-  Serial.println("Mount LittleFS");
+  display.printf("Mount LittleFS...");
 
   if (!LittleFS.begin())
   {
-    Serial.println("LittleFS mount failed");
+    display.printf("LittleFS mount failed!");
     return;
   }
 
@@ -111,18 +125,19 @@ void setup(void) {
   bool bpass = readConfig("/config.json", "wifi_password", wifi_password);
   bNeedInit = !(bssid && bpass);
 
-  Serial.printf("ssid: %s pass: %s\r", wifi_ssid, wifi_password);
+
+  
 
 
   if (bNeedInit)
   {
     initAP();
-    Serial.println("Init AP mode!!!!!!!!!!!!!!");
+    display.printf("Init AP mode...");
   }
   else
   {
-    Serial.println("Init STA mode!!!!!!!!!!!!!!");
-    Serial.println(wifi_ssid);
+    display.printf("Init STA mode...");
+    display.printf("connecting to %s...", wifi_ssid);
     WiFi.begin(wifi_ssid, wifi_password);
 
     while (WiFi.status() != WL_CONNECTED) 
@@ -141,9 +156,8 @@ void setup(void) {
       Serial.print(".");
     }
 
-    Serial.println("");
-    Serial.println("WiFi connected");
-    Serial.println(WiFi.localIP());
+    display.printf("WiFi connected!");
+    display.printf("Local IP: %s", WiFi.localIP().toString().c_str());
   }
 
 
@@ -158,19 +172,8 @@ void setup(void) {
   server.on("/form/", handleForm);
   server.onNotFound(handleNotFound);
   server.begin();
-  Serial.println("HTTP server started");
-
-
-  long timezone = 8;
-  byte daysavetime = 0;
-  Serial.println("Contacting Time Server");
-  configTime(3600 * timezone, daysavetime * 3600, "cn.ntp.org.cn", "0.pool.ntp.org", "1.pool.ntp.org");
-
-  struct tm tmstruct ;
-  delay(2000);
-  tmstruct.tm_year = 0;
-  getLocalTime(&tmstruct, 5000);
-  Serial.printf("\nNow is : %d-%02d-%02d %02d:%02d:%02d\n", (tmstruct.tm_year) + 1900, (tmstruct.tm_mon) + 1, tmstruct.tm_mday, tmstruct.tm_hour, tmstruct.tm_min, tmstruct.tm_sec);
+  display.printf("HTTP server started!");
+  getNtpTime();
 
 }
 
@@ -178,8 +181,23 @@ void setup(void) {
 
 
 
-void loop(void) {
+void loop(void) 
+{
+  
+  if (localTime.tm_year < (2016 - 1900))
+  {
+    
+    if (millis() - otime > 5000)
+    {
+      otime = millis();
+      getNtpTime();
+      getLocalTime();
+    }
 
+  }
+  
+  
+ 
   http_loop();
   udp_loop();
   delay(1);

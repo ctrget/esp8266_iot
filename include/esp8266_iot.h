@@ -18,11 +18,12 @@
 
 
 
-
+extern struct tm localTime;
 extern Display display;
 extern bool bNeedInit;
 extern bool bDisplay;
 
+bool getLocalTime();
 
 
 #endif
