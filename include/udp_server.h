@@ -18,8 +18,23 @@ extern unsigned int udp_port;
 #define PACKET_TOGGLE_DISPLAY  0X13
 #define PACKET_REBOOT          0X14
 
+class UdpServer
+{
+public:
+  struct Packet
+  {
+    unsigned char cmd;
+    char ver;
+    unsigned short len;
+    unsigned char data[2048];
+  };
 
 
-void udp_loop();
+
+  void udp_loop();
+  void sendPacket(UdpServer::Packet *p, IPAddress ip, uint32_t port);
+
+
+};
 
 #endif

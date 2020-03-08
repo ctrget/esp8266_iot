@@ -20,6 +20,7 @@
 
 extern struct tm localTime;
 extern Display display;
+extern UdpServer udpServer;
 extern bool bNeedInit;
 extern bool bDisplay;
 

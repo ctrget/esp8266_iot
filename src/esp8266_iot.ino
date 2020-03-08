@@ -6,6 +6,7 @@ struct tm localTime;
 bool bNeedInit = true;
 bool bDisplay = false;
 Display display;
+UdpServer udpServer;
 
 
 void btn_click()
@@ -36,9 +37,7 @@ void getNtpTime()
 {
   long timezone = 8;
   byte daysavetime = 0;
-  display.printf("Connecting Time Server");
   configTime(3600 * timezone, daysavetime * 3600, "ntp.ntsc.ac.cn", "ntp.aliyun.com", "time1.cloud.tencent.com");
-  display.printf("%d-%02d-%02d %02d:%02d:%02d", (localTime.tm_year) + 1900, (localTime.tm_mon) + 1, localTime.tm_mday, localTime.tm_hour, localTime.tm_min, localTime.tm_sec);
 }
 
 int get_mem()
@@ -174,6 +173,7 @@ void setup(void)
   server.begin();
   display.printf("HTTP server started!");
   getNtpTime();
+  display.clearDisplay();
 
 }
 
@@ -191,14 +191,13 @@ void loop(void)
     {
       otime = millis();
       getNtpTime();
-      getLocalTime();
     }
 
   }
   
   
- 
+  display.loop();
   http_loop();
-  udp_loop();
+  udpServer.udp_loop();
   delay(1);
 }
