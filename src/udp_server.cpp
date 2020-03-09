@@ -8,7 +8,7 @@ unsigned long utime = 0;
 
 
 
-UdpServer::Packet *buildPacket(char cmd, char *buf = NULL, int len = 0)
+UdpServer::Packet* UdpServer::buildPacket(char cmd, const char *buf /*= NULL*/, int len /*= 0*/)
 {
   UdpServer::Packet *p = new UdpServer::Packet;
   p->cmd = cmd;
@@ -118,7 +118,7 @@ void UdpServer::udp_loop()
       memcpy(&width, rxp.data, 1);
       memcpy(&height, rxp.data + 1, 1);
       memcpy(bmp, rxp.data + 2, rxp.len - 2);
-      display.drawBmp(width, height, bmp);
+      display.drawXBM(width, height, bmp);
       display.ShowHome = false;
       delete[] bmp;
       break;

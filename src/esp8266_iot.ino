@@ -4,7 +4,7 @@ unsigned long otime = 0;
 void ICACHE_RAM_ATTR btn_click();
 struct tm localTime;
 bool bNeedInit = true;
-bool bDisplay = false;
+bool bDisplay = true;
 Display display;
 UdpServer udpServer;
 
@@ -97,7 +97,7 @@ void initAP()
 void setup(void) 
 {
 
-  Serial.begin(115200);
+  Serial.begin(1500000);
   pinMode(D5, INPUT);
   attachInterrupt(digitalPinToInterrupt(D5), btn_click, RISING);
   localTime.tm_year = 0;

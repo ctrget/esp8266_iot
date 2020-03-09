@@ -9,6 +9,7 @@ extern unsigned int udp_port;
 #define PACKET_ALIVE 0X0
 #define PACKET_OK    0X1
 #define PACKET_FAIL  0X2
+#define PACKET_DEBUG 0X4
 
 
 #define PACKET_DISPLAY_IMG     0XF
@@ -33,6 +34,7 @@ public:
 
   void udp_loop();
   void sendPacket(UdpServer::Packet *p, IPAddress ip, uint32_t port);
+  UdpServer::Packet* buildPacket(char cmd, const char *buf = NULL, int len = 0);
 
 
 };

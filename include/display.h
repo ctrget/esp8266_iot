@@ -499,7 +499,7 @@ public:
   Display();
   void init();
   void showTest();
-  void drawBmp(uint8_t width, uint8_t height, uint8_t *bmp);
+  void drawXBM(uint8_t width, uint8_t height, uint8_t *bmp);
   int printf(const char *format, ...);
   void loop();
   void drawHome();
@@ -511,6 +511,7 @@ private:
   uint _strPos;
   uint _fontSize;
   int _displayTime;
+  int _freeTime;
 
 };
 
