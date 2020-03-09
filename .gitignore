@@ -9,7 +9,6 @@
 *.user
 *.userosscache
 *.sln.docstates
-platformio.ini
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
