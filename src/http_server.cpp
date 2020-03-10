@@ -13,6 +13,7 @@ void handleRoot()
 {
 
 
+
   if (bNeedInit)
   {
     Serial.println("init");
@@ -38,12 +39,10 @@ void handlePlain()
 {
   if (server.method() != HTTP_POST)
   {
-    digitalWrite(LED_BUILTIN, 1);
     server.send(405, "text/plain", "Method Not Allowed");
   }
   else
   {
-    digitalWrite(LED_BUILTIN, 1);
     server.send(200, "text/plain", "POST body was:\n" + server.arg("plain"));
   }
 }
@@ -53,12 +52,10 @@ void handleForm()
 {
   if (server.method() != HTTP_POST)
   {
-    digitalWrite(LED_BUILTIN, 1);
     server.send(405, "text/plain", "Method Not Allowed");
   }
   else
   {
-    digitalWrite(LED_BUILTIN, 1);
 
     if (!server.hasArg("method"))
       server.send(405, "text/plain", "Method Not Allowed");
@@ -66,7 +63,36 @@ void handleForm()
     String message = "POST form was:\n";
     const String method =  server.arg("method");
 
-    if (method == "init_config")
+    if (method == "scan_wifi")
+    {
+      WifiData* wdata;
+      int n = scanWIFI(wdata);
+      
+      if (!wdata)
+      {
+        server.send(200, "application/json", "{\"code\":1,\"msg\":\"No wifi detected!\"}");
+        return;
+      }
+    
+      DynamicJsonDocument doc(512);
+      doc["code"] = 0;
+      doc["msg"] = "Scan completed!";
+      JsonArray data = doc.createNestedArray("data");
+
+      for(int i = 0; i < n; i++)
+      {
+        JsonObject jo = data.createNestedObject();
+        jo["ssid"] = (wdata + i)->ssid;
+        jo["rssi"] = (wdata + i)->rssi;
+        jo["encrypt"] = (wdata + i)->encrypt;
+      }
+      
+      String json;
+      serializeJson(doc, json);
+      server.send(200, "application/json", json.c_str());
+      delete[] wdata;
+    }
+    else if (method == "init_config")
     {
       if (!server.hasArg("wifi_ssid") || !server.hasArg("wifi_password"))
         server.send(405, "text/plain", "Method Not Allowed");
@@ -79,24 +105,25 @@ void handleForm()
 
       if (!writeConfig("/config.json", json))
       {
+        
         server.send(200, "application/json", "{\"code\":1,\"msg\":\"write config error!\"}");
         return;
       }
 
-      server.send(200, "application/json", "{\"code\":0,\"msg\":\"老子去重启了，待会连不上wifi咱们还会再见的！\"}");
+      server.send(200, "application/json", "{\"code\":0,\"msg\":\"Config saved, system will be restart!\"}");
       delay(1000);
       ESP.restart();
     }
     else if (method == "reboot")
     {
-      server.send(200, "application/json", "{\"code\":0,\"msg\":\"几秒后老子又是一条好汉！\"}");
+      server.send(200, "application/json", "{\"code\":0,\"msg\":\"systemwill be restart!\"}");
       delay(1000);
       ESP.restart();
     }
     else if (method == "reset")
     {
-      server.send(200, "application/json", "{\"code\":0,\"msg\":\"老子把你当朋友，你竟然想上我！溜了溜了，后会无期！\"}");
       LittleFS.format();
+      server.send(200, "application/json", "{\"code\":0,\"msg\":\"Format completed, system will be restart!\"}");
       delay(1000);
       ESP.restart();
     }
@@ -110,8 +137,8 @@ void handleForm()
   }
 }
 
-void handleNotFound() {
-  digitalWrite(LED_BUILTIN, 1);
+void handleNotFound() 
+{
   String message = "File Not Found\n\n";
   message += "URI: ";
   message += server.uri();

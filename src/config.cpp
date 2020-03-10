@@ -4,7 +4,6 @@
 
 bool readConfig(char* path, char* section, char* value)
 {
-  Serial.printf("ln %s \r", section);
   File configFile = LittleFS.open(path, "r");
 
   if (!configFile)

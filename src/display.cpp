@@ -4,7 +4,27 @@
 #define SCL 4
 #define SDA 5
 
-U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/SCL, /* data=*/SDA, /* reset=*/U8X8_PIN_NONE);
+/*
+//SPI
+   ESP8266 ---  OLED
+     3V    ---  VCC
+     G     ---  GND
+     D7    ---  D1
+     D5    ---  D0
+     D2orD8---  CS
+     D1    ---  DC
+     RST   ---  RES
+//IC2
+     OLED  ---  ESP8266
+     VCC   ---  3.3V
+     GND   ---  G (GND)
+     SCL   ---  D1(GPIO5)
+     SDA   ---  D2(GPIO4)
+*/
+
+//U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/SCL, /* data=*/SDA, /* reset=*/U8X8_PIN_NONE);
+U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/U8X8_PIN_NONE);
+
 unsigned long dtime = 0;
 
 Display::Display()
@@ -187,17 +207,15 @@ void Display::drawXBM(uint8_t width, uint8_t height, uint8_t *bmp)
 {
   u8g2.setDrawColor(0);
   u8g2.setBitmapMode(false);
-  //u8g2.clearBuffer();
+  u8g2.clearBuffer();
   u8g2.drawXBM(0, 0, width, height, bmp);
-  //u8g2.sendBuffer();
+  u8g2.sendBuffer();
 }
 
 
 
 void Display::loop()
 {
-  byte rbyte;
-  byte xbm[1024];
 
   if (millis() - dtime > 1000)
   {
@@ -219,42 +237,5 @@ void Display::loop()
     }
   }
 
-  if (Serial.available() > 0)
-  {
-    rbyte = Serial.read();
-    if (rbyte == 0xAA)
-    {
-      if (Serial.available() > 0)
-      {
-        rbyte = Serial.read();
-        if (rbyte == 0x55)
-        {
-          int countnum = 0;
-          for (int i = 0; i < 1024; i++)
-          {
-            while (Serial.available() == 0)
-              ;
-            xbm[i] = Serial.read();
-            countnum++;
-          }
-          u8g2.firstPage();
-          do
-          {
-            display.drawXBM(128, 64, xbm);
-          } while (u8g2.nextPage());
-        }
-        else if (rbyte == 0x22)
-          return;
-      }
-    }
-  }
 
-  /*
-  if (Serial.available() > 0)
-  {
-    String s = Serial.readStringUntil('|');
-    UdpServer::Packet *p = udpServer.buildPacket(0x4, s.c_str(), strlen(s.c_str()));
-    udpServer.sendPacket(p, IPAddress(255, 255, 255, 255), udp_port);
-  }
-*/
 }

@@ -246,7 +246,7 @@ void UdpServer::udp_loop()
           if (saveCount >= 2)
             break;
 
-          if (doc[hddName])
+          if (hdds)
           {
             sysInfo.hddTemp[saveCount] = atoi(hdds);
             saveCount++;
