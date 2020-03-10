@@ -16,6 +16,12 @@
 #include "http_server.h"
 #include "udp_server.h"
 
+struct WifiData
+{
+    String ssid;
+    int32_t rssi;
+    uint8_t encrypt;
+};
 
 
 extern struct tm localTime;
@@ -25,6 +31,6 @@ extern bool bNeedInit;
 extern bool bDisplay;
 
 bool getLocalTime();
-
+int scanWIFI(WifiData* data);
 
 #endif

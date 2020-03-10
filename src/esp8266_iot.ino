@@ -40,6 +40,7 @@ void getNtpTime()
   configTime(3600 * timezone, daysavetime * 3600, "ntp.ntsc.ac.cn", "ntp.aliyun.com", "time1.cloud.tencent.com");
 }
 
+
 int get_mem()
 {
   uint32_t free;
@@ -83,6 +84,31 @@ bool getLocalTime()
 }
 
 
+int scanWIFI(WifiData* wdata)
+{
+
+  int n = WiFi.scanNetworks();
+
+  if (n == 0)
+  {
+    wdata = NULL;
+  }
+  else
+  {
+    wdata = new WifiData[n];
+
+
+    for (int i = 0; i < n; i++)
+    {
+      wdata[i].ssid = WiFi.SSID(i);
+      wdata[i].rssi = WiFi.RSSI(i);
+      wdata[i].encrypt = WiFi.encryptionType(i);
+    }
+    
+  }
+
+  return n;
+}
 
 
 void initAP()
@@ -137,7 +163,29 @@ void setup(void)
   {
     display.printf("Init STA mode...");
     display.printf("connecting to %s...", wifi_ssid);
+    WiFi.mode(WIFI_STA);
     WiFi.begin(wifi_ssid, wifi_password);
+    
+/*
+    WiFi.disconnect();
+    WifiData* wdata;
+    int n = scanWIFI(wdata);
+
+    if (n > 0)
+    {
+      Serial.printf("wificount:%d", n);
+
+      for(int i = 0; i < n; i++)
+      {
+        Serial.printf("wifi[%d]:", i);
+        //Serial.printf("wifi[%d]:%s===%d====%d", i, wdata[i].ssid.c_str(), wdata[i].rssi, wdata[i].encrypt);
+      }
+    }
+
+ */
+
+    
+
 
     while (WiFi.status() != WL_CONNECTED) 
     {
