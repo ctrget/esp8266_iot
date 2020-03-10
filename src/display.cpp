@@ -1,9 +1,6 @@
 #include "esp8266_iot.h"
 #include "display.h"
 
-#define SCL 4
-#define SDA 5
-
 /*
 //SPI
    ESP8266 ---  OLED
