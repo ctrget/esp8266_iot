@@ -31,6 +31,6 @@ extern bool bNeedInit;
 extern bool bDisplay;
 
 bool getLocalTime();
-int scanWIFI(WifiData* data);
+int scanWIFI(WifiData* wdata, int len);
 
 #endif

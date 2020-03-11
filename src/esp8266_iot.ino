@@ -84,21 +84,16 @@ bool getLocalTime()
 }
 
 
-int scanWIFI(WifiData* wdata)
+int scanWIFI(WifiData* wdata, int len)
 {
 
   int n = WiFi.scanNetworks();
 
-  if (n == 0)
+  if (n > 0)
   {
-    wdata = NULL;
-  }
-  else
-  {
-    wdata = new WifiData[n];
+    len = n > len ? len : n; 
 
-
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < len; i++)
     {
       wdata[i].ssid = WiFi.SSID(i);
       wdata[i].rssi = WiFi.RSSI(i);
@@ -123,7 +118,9 @@ void initAP()
 void setup(void) 
 {
 
-  Serial.begin(1500000);
+  Serial.begin(115200);
+
+  
   pinMode(D5, INPUT);
   attachInterrupt(digitalPinToInterrupt(D5), btn_click, RISING);
   localTime.tm_year = 0;
@@ -165,26 +162,7 @@ void setup(void)
     display.printf("connecting to %s...", wifi_ssid);
     WiFi.mode(WIFI_STA);
     WiFi.begin(wifi_ssid, wifi_password);
-    
-/*
-    WiFi.disconnect();
-    WifiData* wdata;
-    int n = scanWIFI(wdata);
 
-    if (n > 0)
-    {
-      Serial.printf("wificount:%d", n);
-
-      for(int i = 0; i < n; i++)
-      {
-        Serial.printf("wifi[%d]:", i);
-        //Serial.printf("wifi[%d]:%s===%d====%d", i, wdata[i].ssid.c_str(), wdata[i].rssi, wdata[i].encrypt);
-      }
-    }
-
- */
-
-    
 
 
     while (WiFi.status() != WL_CONNECTED) 
@@ -222,6 +200,7 @@ void setup(void)
   display.printf("HTTP server started!");
   getNtpTime();
   display.clearDisplay();
+  
 
 }
 
@@ -247,5 +226,6 @@ void loop(void)
   display.loop();
   http_loop();
   udpServer.udp_loop();
+  
   delay(1);
 }

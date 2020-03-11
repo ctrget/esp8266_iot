@@ -65,10 +65,11 @@ void handleForm()
 
     if (method == "scan_wifi")
     {
-      WifiData* wdata;
-      int n = scanWIFI(wdata);
+      WifiData* wdata = new WifiData[10];
       
-      if (!wdata)
+      int n = scanWIFI(wdata, 10);
+      
+      if (n <= 0)
       {
         server.send(200, "application/json", "{\"code\":1,\"msg\":\"No wifi detected!\"}");
         return;

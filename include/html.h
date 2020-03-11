@@ -1,4 +1,4 @@
-static const String indexPage PROGMEM = "<!DOCTYPE html>\
+static const char indexPage[] PROGMEM = "<!DOCTYPE html>\
 <html lang=\"zh-cmn-Hans\">\
 <head>\
     <meta charset=\"UTF-8\">\
@@ -214,7 +214,7 @@ static const String indexPage PROGMEM = "<!DOCTYPE html>\
 
 
 //============================================================================================================================================================================================================================
-static const String initPage PROGMEM = "<!DOCTYPE html>\
+static const char initPage[] PROGMEM = "<!DOCTYPE html>\
 <html>\
 <head>\
   <style>\
