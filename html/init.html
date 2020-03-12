@@ -4,14 +4,60 @@
   <style>
 html{font-size:62.5%;}
 body{text-align: center;}
-.left{width:30%; float:left} 
-.right{width:70%; float:right;}
+.left{width:80%; float:left} 
+.right{width:30%; float:right;}
 .input{width: 90%;height:4rem; margin-top:5rem;}
+.select_left{width: 70%;height:4rem; float:left;margin-left:1.8rem;}
+.button_right{width:20%; height:4rem;float:right;margin-right:1.8rem;}
 .button{margin-top:40%;background-color:#07c160;position: relative;display: block;width: 100%;height:4rem; margin-left: auto;margin-right: auto;padding: 8px 24px;box-sizing: border-box;font-weight: 700;font-size: 17px;text-align: center;text-decoration: none;color: #fff;line-height: 1.41176471;border-radius: 4px;overflow: hidden;-webkit-tap-highlight-color: rgba(0,0,0,0);}
 .container{margin-top:50%;}
   </style>
-  <script>
+  <script charset="UTF-8">
+function scanWifi()
+{
+             document.getElementById("scanbtn").disabled = true;
+            var http = new XMLHttpRequest();
+            http.open('GET', '/api?scan_wifi');
+            http.onreadystatechange = function()
+			{
+                if (http.status === 200 && http.readyState === 4)
+				{
+                    console.log(http.responseText);
+                    var res = http.responseText;
+                    var json = JSON.parse(res);
+				    
+					if (json.code == 0)
+					{
+					    var cbxwifi = document.getElementById("cbxwifi");
+					    cbxwifi.options.length=0;
+						cbxwifi.options.add(new Option("请选择", "0"));
+						
+						json.data.forEach(v=>
+					    {  
+						    cbxwifi.options.add(new Option(v.ssid, v.ssid));
+                        });
+					}
+                }
 
+				document.getElementById("scanbtn").disabled = false;
+				
+            };
+
+            http.send();
+}
+
+function selectChange() 
+{
+        var cbxwifi = document.getElementById("cbxwifi");
+        var ssid = cbxwifi.options[cbxwifi.selectedIndex].value;
+		
+		if (ssid !== "0")
+		{
+		    document.getElementById("ssid").value = ssid;
+		}
+
+}
+		
 function checkInput()
 {
   var ssid = document.getElementById('ssid').value;
@@ -25,6 +71,7 @@ function checkInput()
   
    document.getElementById('form').submit();
 }
+
   </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
@@ -37,8 +84,16 @@ function checkInput()
 
   <div class="container">
     <h1>请输入需要连接的热点信息</h1>
-    <form id="form" method="post" enctype="application/x-www-form-urlencoded" action="/form/">
+    <form id="form" method="post" enctype="application/x-www-form-urlencoded" action="/form">
       <input type="hidden" name="method" value="init_config"><br>
+	  <div class="div">
+            <select class="select_left" id="cbxwifi" onchange="selectChange()">
+                <option selected="selected" value="0">请扫描或者手动输入</option>
+            </select>
+    </div>
+	
+	<input type="button" id="scanbtn" class="button_right" value="扫描" onclick="scanWifi();">
+
       <input id="ssid" type="text" class="input" name="wifi_ssid" placeholder="请输入要连接的热点名称"><br>
       <input id="password" type="password" class="input" name="wifi_password" placeholder="请输入要连接的热点密码"><br>
       <input type="button" class="button" value="提交" onclick="checkInput();">

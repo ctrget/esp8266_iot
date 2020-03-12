@@ -6,7 +6,11 @@ struct tm localTime;
 bool bNeedInit = true;
 bool bDisplay = true;
 Display display;
+DNSServer dnsServer;
 UdpServer udpServer;
+
+const IPAddress apIP(192, 168, 1, 1);
+const byte DNS_PORT = 53;
 
 
 void btn_click()
@@ -108,10 +112,16 @@ int scanWIFI(WifiData* wdata, int len)
 
 void initAP()
 {
-  WiFi.softAPConfig(IPAddress(192, 168, 1, 1), IPAddress(192, 168, 1, 1), IPAddress(255, 255, 255, 0));
-  WiFi.softAP("8266", "12345678");
-  IPAddress myIP = WiFi.softAPIP();
-  display.printf("AP IP address: %s", myIP.toString().c_str());
+  WiFi.mode(WIFI_AP);
+  WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
+  WiFi.softAP("ESP82266_Setup");
+  Serial.printf("AP IP address: %s\r", apIP.toString().c_str());
+
+  if (dnsServer.start(DNS_PORT, "*", apIP))
+  {
+    Serial.println("DNS server started");
+  }
+
 }
 
 
@@ -163,8 +173,6 @@ void setup(void)
     WiFi.mode(WIFI_STA);
     WiFi.begin(wifi_ssid, wifi_password);
 
-
-
     while (WiFi.status() != WL_CONNECTED) 
     {
       delay(500);
@@ -175,7 +183,6 @@ void setup(void)
         initAP();
         break;
       }
-
 
       timeout++;
       Serial.print(".");
@@ -188,13 +195,12 @@ void setup(void)
 
 
 
-
-
   udp_server.begin(udp_port);
   server.on("/", handleRoot);
   server.on("/init", handleInit);
-  server.on("/plain/", handlePlain);
-  server.on("/form/", handleForm);
+  server.on("/api", handleAPI);
+  server.on("/plain", handlePlain);
+  server.on("/form", handleForm);
   server.onNotFound(handleNotFound);
   server.begin();
   display.printf("HTTP server started!");
@@ -211,21 +217,22 @@ void setup(void)
 void loop(void) 
 {
   
-  if (localTime.tm_year < (2016 - 1900))
+  if (localTime.tm_year < (2016 - 1900) && !bNeedInit)
   {
     
     if (millis() - otime > 5000)
     {
       otime = millis();
       getNtpTime();
+      Serial.println("get ntp time...");
     }
 
   }
   
   
   display.loop();
+  dnsServer.processNextRequest();
   http_loop();
   udpServer.udp_loop();
-  
   delay(1);
 }

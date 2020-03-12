@@ -6,6 +6,7 @@ extern ESP8266WebServer server;
 void http_loop();
 void handleRoot();
 void handleInit();
+void handleAPI();
 void handlePlain();
 void handleForm();
 void handleNotFound();

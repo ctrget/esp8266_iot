@@ -11,10 +11,12 @@
 #include <U8g2lib.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
+#include <DNSServer.h>
 #include "config.h"
 #include "display.h"
 #include "http_server.h"
 #include "udp_server.h"
+
 
 struct WifiData
 {

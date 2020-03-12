@@ -7,21 +7,15 @@ ESP8266WebServer server(http_port);
 
 
 
-
-
 void handleRoot()
 {
 
-
-
   if (bNeedInit)
   {
-    Serial.println("init");
     handleInit();
   }
   else
   {
-    Serial.println("index");
     server.send(200, "text/html", indexPage);
   }
 
@@ -35,50 +29,28 @@ void handleInit()
 }
 
 
-void handlePlain()
+void handleAPI()
 {
-  if (server.method() != HTTP_POST)
+
+  if (server.hasArg("scan_wifi"))
   {
-    server.send(405, "text/plain", "Method Not Allowed");
-  }
-  else
-  {
-    server.send(200, "text/plain", "POST body was:\n" + server.arg("plain"));
-  }
-}
-
-
-void handleForm()
-{
-  if (server.method() != HTTP_POST)
-  {
-    server.send(405, "text/plain", "Method Not Allowed");
-  }
-  else
-  {
-
-    if (!server.hasArg("method"))
-      server.send(405, "text/plain", "Method Not Allowed");
-
-    String message = "POST form was:\n";
-    const String method =  server.arg("method");
-
-    if (method == "scan_wifi")
-    {
+      
       WifiData* wdata = new WifiData[10];
       
       int n = scanWIFI(wdata, 10);
-      
+ 
+
       if (n <= 0)
       {
         server.send(200, "application/json", "{\"code\":1,\"msg\":\"No wifi detected!\"}");
         return;
       }
-    
+      
       DynamicJsonDocument doc(512);
       doc["code"] = 0;
       doc["msg"] = "Scan completed!";
       JsonArray data = doc.createNestedArray("data");
+
 
       for(int i = 0; i < n; i++)
       {
@@ -88,15 +60,50 @@ void handleForm()
         jo["encrypt"] = (wdata + i)->encrypt;
       }
       
+
       String json;
       serializeJson(doc, json);
       server.send(200, "application/json", json.c_str());
       delete[] wdata;
-    }
-    else if (method == "init_config")
+  }
+  else
+    server.send(405, "text/html", "Method Not Allowed");
+
+
+}
+
+void handlePlain()
+{
+  if (server.method() != HTTP_POST)
+  {
+    server.send(405, "text/html", "Method Not Allowed");
+  }
+  else
+  {
+    server.send(200, "text/html", "POST body was:\n" + server.arg("plain"));
+  }
+}
+
+
+void handleForm()
+{
+  if (server.method() != HTTP_POST)
+  {
+    server.send(405, "text/html", "Method Not Allowed");
+  }
+  else
+  {
+
+    if (!server.hasArg("method"))
+      server.send(405, "text/html", "Method Not Allowed");
+
+    
+    const String method =  server.arg("method");
+
+    if (method == "init_config")
     {
       if (!server.hasArg("wifi_ssid") || !server.hasArg("wifi_password"))
-        server.send(405, "text/plain", "Method Not Allowed");
+        server.send(405, "text/html", "Method Not Allowed");
 
       const String wifi_ssid =  server.arg("wifi_ssid");
       const String wifi_password =  server.arg("wifi_password");
@@ -128,18 +135,38 @@ void handleForm()
       delay(1000);
       ESP.restart();
     }
+    else
+    {
+      server.send(405, "text/html", "Method Not Allowed");
+    }
+    
 
+    /*
+    String message = "POST form was:\n";
 
     for (uint8_t i = 0; i < server.args(); i++)
     {
       message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
     }
-    server.send(200, "text/plain", message);
+    server.send(200, "text/html", message);
+    */
+
   }
 }
 
+
+
+
+
 void handleNotFound() 
 {
+
+  if (bNeedInit)
+  {
+    handleInit();
+    return;
+  }
+
   String message = "File Not Found\n\n";
   message += "URI: ";
   message += server.uri();
@@ -148,11 +175,14 @@ void handleNotFound()
   message += "\nArguments: ";
   message += server.args();
   message += "\n";
-  for (uint8_t i = 0; i < server.args(); i++) {
+
+  for (uint8_t i = 0; i < server.args(); i++)
+  {
     message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
   }
-  server.send(404, "text/plain", message);
-  digitalWrite(LED_BUILTIN, 1);
+
+  server.send(404, "text/html", message);
+
 }
 
 void http_loop()

@@ -21,7 +21,7 @@
         <div class="weui-cells__title">网络配置</div>
         <div class="weui-cells weui-cells_form">
 		
-		<form method="post" enctype="application/x-www-form-urlencoded" action="/form/"> 
+		<form method="post" enctype="application/x-www-form-urlencoded" action="/form"> 
 		  <input name="method" value="setup" type="hidden">
           <div class="weui-cell weui-cell_active">
             <div class="weui-cell__hd"><label class="weui-label">SSID</label></div>
@@ -170,7 +170,7 @@
 			data.wifi_ssid = ssid;
 			data.wifi_password = pass;
 			data.method = "init_config";
-			doAjax(/form/, data);
+			doAjax("/form", data);
 
 		}
 		
@@ -179,7 +179,7 @@
 		    weui.confirm('确定要复位开发板吗？所有设置将会丢失！', function(){ 
 			    var data = {};
 			    data.method = "reset";
-			    doAjax(/form/, data);
+			    doAjax("/form", data);
 			  }
 			  , function(){ 
 			  
