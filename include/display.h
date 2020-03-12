@@ -504,15 +504,15 @@ public:
   void loop();
   void drawHome();
   void clearDisplay();
+  void refresh();
   SysInfo info;
-  bool ShowHome;
+  
 
 private:
   uint _strPos;
   uint _fontSize;
-  int _displayTime;
-  int _freeTime;
-
+  uint _displayTime;
+  uint _freeTime;
 };
 
 #endif

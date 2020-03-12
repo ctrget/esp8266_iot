@@ -158,8 +158,7 @@ void setup(void)
   bNeedInit = !(bssid && bpass);
 
 
-  
-
+ 
 
   if (bNeedInit)
   {

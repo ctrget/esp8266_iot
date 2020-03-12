@@ -29,7 +29,6 @@ Display::Display()
   this->_strPos = 0;
   this->_fontSize = 0;
   this->_displayTime = 0;
-  this->ShowHome = true;
   this->_freeTime = 0;
 }
 
@@ -65,7 +64,6 @@ int Display::printf(const char *format, ...)
     u8g2.drawStr(0, this->_strPos, str);
   } while (u8g2.nextPage());
 
-
   this->_strPos += this->_fontSize;
   delete[] str;
   return ret;
@@ -73,18 +71,23 @@ int Display::printf(const char *format, ...)
 
 void Display::showTest()
 {
-
 }
+
+
 
 void Display::clearDisplay()
 {
   u8g2.clearDisplay();
 }
 
+
+void Display::refresh()
+{
+  this->_freeTime = millis();
+}
+
 void Display::drawHome()
 {
-
-  bDisplay = true;
 
   u8g2.firstPage();
 
@@ -97,108 +100,101 @@ void Display::drawHome()
     u8g2.setFont(u8g2_font_wqy12_t_gb2312a);
     sprintf(buf, "%d-%02d-%02d %02d:%02d:%02d", (localTime.tm_year) + 1900, (localTime.tm_mon) + 1, localTime.tm_mday, localTime.tm_hour, localTime.tm_min, localTime.tm_sec);
     u8g2.drawUTF8(10, 8, buf);
-    
 
-    if (this->_displayTime >= 10)
-      this->_displayTime = 0;
-
-    if (this->_displayTime < 5)
+    if (info.hddCount > 0)
     {
-      
-      //CPU频率
-      u8g2.setFont(u8g2_font_fur35_tn);
-      u8g2.drawUTF8(0, 64, info.cpuClock);
-      u8g2.setFont(u8g2_font_wqy14_t_gb2312a);
-      u8g2.drawUTF8(70, 64, "GHz");
+      if (this->_displayTime >= 10)
+        this->_displayTime = 0;
 
-      u8g2.setFont(u8g2_font_5x8_tf);
-      //CPU使用率
-      u8g2.drawUTF8(0, 16, "CPU%");
-      u8g2.drawRFrame(27, 10, 101, 5, 2);
-      u8g2.drawBox(28, 10, info.cpuLoad, 4);
-
-      //内存使用率
-      u8g2.drawUTF8(0, 24, "MEM%");
-      u8g2.drawRFrame(27, 18, 101, 5, 2);
-      u8g2.drawBox(28, 18, info.memUsage, 4);
-
-      //CPU温度 风扇转速
-      u8g2.setFont(u8g2_font_HelvetiPixel_tr);
-      sprintf(buf, "%sC", info.cpuTemp);
-      u8g2.drawUTF8(70, 35, buf);
-      sprintf(buf, "%sR", info.cpuSpeed);
-      u8g2.drawUTF8(95, 35, buf);
-
-      //CPU电压 功耗
-      sprintf(buf, "%sV", info.cpuVolt);
-      u8g2.drawUTF8(70, 45, buf);
-      sprintf(buf, "%sW", info.cpuPower);
-      u8g2.drawUTF8(95, 45, buf);
-
-      //主板温度 有用？？？
-      sprintf(buf, "%sC", info.boardTemp);
-      u8g2.drawUTF8(100, 55, buf);
-    }
-    else
-    {
-      //GPU频率
-      u8g2.setFont(u8g2_font_fur35_tn);
-      u8g2.drawUTF8(0, 64, info.gpuClock);
-      u8g2.setFont(u8g2_font_wqy14_t_gb2312a);
-      u8g2.drawUTF8(70, 64, "GHz");
-
-      
-      u8g2.setFont(u8g2_font_5x8_tf);
-      //GPU使用率
-      u8g2.drawUTF8(0, 16, "GPU%");
-      u8g2.drawRFrame(27, 10, 101, 5, 2);
-      u8g2.drawBox(28, 10, info.gpuLoad, 4);
-
-      //显存使用率
-      u8g2.drawUTF8(0, 24, "VRM%");
-      u8g2.drawRFrame(27, 18, 101, 5, 2);
-      u8g2.drawBox(28, 18, info.vmemUsage, 4);
-
-      //GPU温度 风扇转速
-      u8g2.setFont(u8g2_font_HelvetiPixel_tr);
-      sprintf(buf, "%sC", info.gpuTemp);
-      u8g2.drawUTF8(70, 35, buf);
-      sprintf(buf, "%sR", info.gpuSpeed);
-      u8g2.drawUTF8(105, 35, buf);
-
-
-      //GPU电压 功耗
-      sprintf(buf, "%sV", info.gpuVolt);
-      u8g2.drawUTF8(70, 45, buf);
-      sprintf(buf, "%dW", info.gpuTDP);
-      u8g2.drawUTF8(105, 45, buf);
-
-
-      if (info.hddCount > 0)
+      if (this->_displayTime < 5)
       {
-        //硬盘1温度
-        sprintf(buf, "%dC", info.hddTemp[0]);
-        u8g2.drawUTF8(105, 55, buf);
+
+        //CPU频率
+        u8g2.setFont(u8g2_font_fur35_tn);
+        u8g2.drawUTF8(0, 64, info.cpuClock);
+        u8g2.setFont(u8g2_font_wqy14_t_gb2312a);
+        u8g2.drawUTF8(70, 64, "GHz");
+
+        u8g2.setFont(u8g2_font_5x8_tf);
+        //CPU使用率
+        u8g2.drawUTF8(0, 16, "CPU%");
+        u8g2.drawRFrame(27, 10, 101, 5, 2);
+        u8g2.drawBox(28, 10, info.cpuLoad, 4);
+
+        //内存使用率
+        u8g2.drawUTF8(0, 24, "MEM%");
+        u8g2.drawRFrame(27, 18, 101, 5, 2);
+        u8g2.drawBox(28, 18, info.memUsage, 4);
+
+        //CPU温度 风扇转速
+        u8g2.setFont(u8g2_font_HelvetiPixel_tr);
+        sprintf(buf, "%sC", info.cpuTemp);
+        u8g2.drawUTF8(70, 35, buf);
+        sprintf(buf, "%sR", info.cpuSpeed);
+        u8g2.drawUTF8(95, 35, buf);
+
+        //CPU电压 功耗
+        sprintf(buf, "%sV", info.cpuVolt);
+        u8g2.drawUTF8(70, 45, buf);
+        sprintf(buf, "%sW", info.cpuPower);
+        u8g2.drawUTF8(95, 45, buf);
+
+        //主板温度 有用？？？
+        sprintf(buf, "%sC", info.boardTemp);
+        u8g2.drawUTF8(100, 55, buf);
+      }
+      else
+      {
+        //GPU频率
+        u8g2.setFont(u8g2_font_fur35_tn);
+        u8g2.drawUTF8(0, 64, info.gpuClock);
+        u8g2.setFont(u8g2_font_wqy14_t_gb2312a);
+        u8g2.drawUTF8(70, 64, "GHz");
+
+        u8g2.setFont(u8g2_font_5x8_tf);
+        //GPU使用率
+        u8g2.drawUTF8(0, 16, "GPU%");
+        u8g2.drawRFrame(27, 10, 101, 5, 2);
+        u8g2.drawBox(28, 10, info.gpuLoad, 4);
+
+        //显存使用率
+        u8g2.drawUTF8(0, 24, "VRM%");
+        u8g2.drawRFrame(27, 18, 101, 5, 2);
+        u8g2.drawBox(28, 18, info.vmemUsage, 4);
+
+        //GPU温度 风扇转速
+        u8g2.setFont(u8g2_font_HelvetiPixel_tr);
+        sprintf(buf, "%sC", info.gpuTemp);
+        u8g2.drawUTF8(70, 35, buf);
+        sprintf(buf, "%sR", info.gpuSpeed);
+        u8g2.drawUTF8(105, 35, buf);
+
+        //GPU电压 功耗
+        sprintf(buf, "%sV", info.gpuVolt);
+        u8g2.drawUTF8(70, 45, buf);
+        sprintf(buf, "%dW", info.gpuTDP);
+        u8g2.drawUTF8(105, 45, buf);
+
+        if (info.hddCount > 0)
+        {
+          //硬盘1温度
+          sprintf(buf, "%dC", info.hddTemp[0]);
+          u8g2.drawUTF8(105, 55, buf);
+        }
+
+        if (info.hddCount > 1)
+        {
+          //硬盘2温度
+          sprintf(buf, "%dC", info.hddTemp[1]);
+          u8g2.drawUTF8(105, 64, buf);
+        }
       }
 
-      if (info.hddCount > 1)
-      {
-        //硬盘2温度
-        sprintf(buf, "%dC", info.hddTemp[1]);
-        u8g2.drawUTF8(105, 64, buf);
-      }
-
-      
+      delete[] buf;
     }
-
-    delete[] buf;
 
   } while (u8g2.nextPage());
-
-  
 }
-
-
 
 void Display::drawXBM(uint8_t width, uint8_t height, uint8_t *bmp)
 {
@@ -209,8 +205,6 @@ void Display::drawXBM(uint8_t width, uint8_t height, uint8_t *bmp)
   u8g2.sendBuffer();
 }
 
-
-
 void Display::loop()
 {
 
@@ -218,21 +212,18 @@ void Display::loop()
   {
     dtime = millis();
     getLocalTime();
-    this->_freeTime++;
 
-    if (this->_freeTime > 30)
+    if (millis() - this->_freeTime > 10000)
     {
-      display.clearDisplay();
+      this->_freeTime = millis();
       bDisplay = false;
-      this->_freeTime = 0;
+      display.clearDisplay();
     }
 
-    if (this->ShowHome && bDisplay)
+    if (bDisplay)
     {
       this->drawHome();
       this->_displayTime++;
     }
   }
-
-
 }
