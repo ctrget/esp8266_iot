@@ -342,3 +342,4 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 platformio.ini
+天气显示.psd
