@@ -110,7 +110,7 @@ void UdpServer::udp_loop()
         DeserializationError error = deserializeJson(doc, js);
         if (error)
         {
-          Serial.println("parse json error!");
+          display.printf("parse json error!");
           return;
         }
         const char* cpuClock = doc["SCPUCLK"];

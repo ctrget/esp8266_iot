@@ -113,7 +113,6 @@ void setup(void)
         break;
       }
       timeout++;
-      Serial.print(".");
     }
     display.printf("WiFi connected!");
     display.printf("Local IP: %s", WiFi.localIP().toString().c_str());
