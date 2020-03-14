@@ -141,7 +141,6 @@ void loop(void)
     {
       otime = millis();
       getNtpTime();
-      Serial.println("get ntp time...");
     }
   }
   display.loop();
