@@ -73,23 +73,32 @@ void Display::showTest()
 void Display::drawHome()
 {
   u8g2.firstPage();
-  bool issuccess;
-  //char *appid = new char[16];
-  //char *appsecret = new char[16];
-  //char *city = new char[16];
-  //char *wea = new char[16];
+  char *city = new char[16];
+  char *wea = new char[16];
+  char *tmp = new char[8];
+  int updatewea = localTime.tm_min + 30;
   do
   {
     char *nowdata = new char[32];
     char *nowtime = new char[32];
+    if (localTime.tm_min == updatewea)
+    {
+      updatewea = localTime.tm_min + 30;
+      String appid = "82318441";
+      String appsecret = "ATmq64SD";
+      String weaapi = "https://tianqiapi.com/api?version=v6&appid=" + appid+ "&appsercet=" + appsecret;
+      WiFiClientSecure client;
+      
+    }
+    
     u8g2.setDrawColor(1);
     //获取时间
     sprintf(nowdata, "%d-%02d-%02d", (localTime.tm_year) + 1900, (localTime.tm_mon) + 1, localTime.tm_mday);
     sprintf(nowtime," %02d:%02d:%02d", localTime.tm_hour, localTime.tm_min, localTime.tm_sec);
     //城市 天气情况
     u8g2.setFont(u8g2_font_wqy12_t_gb2312a);
-    u8g2.drawUTF8(5,58,"城市");
-    u8g2.drawUTF8(75,58,"天气情况");
+    u8g2.drawUTF8(5,58,city);
+    u8g2.drawUTF8(75,58,wea);
     //星期日
     u8g2.setFont(u8g2_font_wqy13_t_gb2312a);
     u8g2.drawUTF8(80,16,"星期日");
@@ -101,15 +110,13 @@ void Display::drawHome()
     u8g2.drawStr(0,41,nowtime);
     //温度
     u8g2.setFont(u8g2_font_wqy13_t_gb2312a);
-    u8g2.drawUTF8(37,58,"100°C");
+    u8g2.drawUTF8(37,58,tmp);
     u8g2.sendBuffer();
     //释放资源
     delete[] nowdata;
     delete[] nowtime;
-    //delete[] appid;
-    //delete[] appsecret;
-    //delete[] city;
-    //delete[] wea;
+    delete[] city;
+    delete[] wea;
   } while (u8g2.nextPage());
 
 }
