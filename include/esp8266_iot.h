@@ -8,8 +8,10 @@
 #include <FS.h>
 #include <LittleFS.h>
 #include <ArduinoJson.h>
+#include <Arduino_JSON.h>
 #include <U8g2lib.h>
 #include <ESP8266WiFi.h>
+#include <ESP8266HTTPClient.h>
 #include <ESP8266WebServer.h>
 #include <DNSServer.h>
 #include "config.h"

@@ -19,6 +19,8 @@
 */
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/U8X8_PIN_NONE);
 unsigned long dtime = 0;
+HTTPClient http;
+
 Display::Display()
 {
   this->_strPos = 0;
@@ -66,80 +68,107 @@ void Display::refresh()
 {
   this->_freeTime = millis();
 }
-void Display::showTest()
+
+
+void Display::getWeather()
 {
-  
+  String appid = "82318441";
+  String appsecret = "ATmq64SD";
+  String apiUrl = "http://tianqiapi.com/api?version=v6&appid="+ appid + "&appsecret=" + appsecret;
+  String json = "";
+
+  if (weather.time == 0)
+    u8g2.drawUTF8(5, 58, "正在获取天气信息");
+    
+  Serial.print("[HTTP] begin...\n");
+
+    if (http.begin(apiUrl)) 
+    {
+
+      Serial.print("[HTTP] GET...\n");
+      int httpCode = http.GET();
+
+
+      if (httpCode > 0)
+      {
+
+        Serial.printf("[HTTP] GET... code: %d\n", httpCode);
+
+        if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY)
+        {
+
+          json = http.getString();
+          JSONVar jo = JSON.parse(json);
+    
+          if (JSON.typeof(jo) != "undefined")
+          {
+            Serial.printf("aaaaaaaaaaaaaaaaaaaaaaaaaa");
+            strcpy(weather.city, jo["city"]);
+            strcpy(weather.wea, jo["wea"]);
+            strcpy(weather.tem, jo["tem"]);
+            weather.time = millis();
+
+          }
+
+
+        }
+      }
+      else
+      {
+        Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
+      }
+
+      http.end();
+    } 
+    else 
+    {
+      Serial.printf("[HTTP} Unable to connect\n");
+    }
+
+
 }
+
 void Display::drawHome()
 {
+
   u8g2.firstPage();
   bool isget = false;
-  char *city = new char[16];
-  char *wea = new char[16];
-  char *tmp = new char[8];
+  u8g2.setDrawColor(1);
+  u8g2.setFont(u8g2_font_wqy12_t_gb2312a);
   int updatewea = localTime.tm_min + 30;
+
   do
   {
     char *nowdata = new char[32];
     char *nowtime = new char[32];
-    if (localTime.tm_min == updatewea)
-    {
-      updatewea = localTime.tm_min + 30;
-      String appid = "82318441";
-      String appsecret = "ATmq64SD";
-      String weaapi = "https://tianqiapi.com/api?version=v6&appid=" + appid+ "&appsercet=" + appsecret;
-      String json = "";
-      WiFiClientSecure client;
-      client.connect(weaapi,80);
-      json =  client.readString();
-      DynamicJsonDocument doc(2048);
-      DeserializationError error = deserializeJson(doc, json);
-      if (error)
-      {
-        isget = false;
-        return;
-      }
-      city = doc["city"];
-      wea = doc["wea"];
-      tmp = doc["tem"];
-      isget = true;
-    }
-    u8g2.setDrawColor(1);
-    if (isget)
-    {
-      //城市 天气情况
-      u8g2.setFont(u8g2_font_wqy12_t_gb2312a);
-      u8g2.drawUTF8(5,58,city);
-      u8g2.drawUTF8(75,58,wea);
-      //温度
-      u8g2.setFont(u8g2_font_wqy13_t_gb2312a);
-      u8g2.drawUTF8(37,58,tmp);
-    }else
-    {
-      u8g2.setFont(u8g2_font_wqy12_t_gb2312a);
-      u8g2.drawUTF8(5,58,"正在获取天气信息");
-    }
+
+    //城市 天气情况
+    u8g2.setFont(u8g2_font_wqy12_t_gb2312a);
+    u8g2.drawUTF8(5, 58, weather.city);
+    u8g2.drawUTF8(75, 58, weather.wea);
+    //温度
+    u8g2.setFont(u8g2_font_wqy13_t_gb2312a);
+    u8g2.drawUTF8(37, 58, weather.tem);
+
     //获取时间
     sprintf(nowdata, "%d-%02d-%02d", (localTime.tm_year) + 1900, (localTime.tm_mon) + 1, localTime.tm_mday);
-    sprintf(nowtime," %02d:%02d:%02d", localTime.tm_hour, localTime.tm_min, localTime.tm_sec);
+    sprintf(nowtime, " %02d:%02d:%02d", localTime.tm_hour, localTime.tm_min, localTime.tm_sec);
     //星期日
     u8g2.setFont(u8g2_font_wqy13_t_gb2312a);
-    u8g2.drawUTF8(80,16,"星期日");
+    u8g2.drawUTF8(80, 16, "星期日");
     //日期
     u8g2.setFont(u8g2_font_wqy16_t_gb2312a);
-    u8g2.drawUTF8(0,16,nowdata);
+    u8g2.drawUTF8(0, 16, nowdata);
     //时间
     u8g2.setFont(u8g2_font_fub20_tn);
-    u8g2.drawStr(0,41,nowtime);
+    u8g2.drawStr(0, 41, nowtime);
     u8g2.sendBuffer();
     //释放资源
     delete[] nowdata;
     delete[] nowtime;
-    delete[] city;
-    delete[] wea;
   } while (u8g2.nextPage());
-
 }
+
 void Display::drawDashBorad()
 {
   u8g2.firstPage();
@@ -230,6 +259,7 @@ void Display::drawDashBorad()
     }
   } while (u8g2.nextPage());
 }
+
 void Display::drawXBM(uint8_t width, uint8_t height, uint8_t *bmp)
 {
   u8g2.setDrawColor(0);
@@ -238,14 +268,19 @@ void Display::drawXBM(uint8_t width, uint8_t height, uint8_t *bmp)
   u8g2.drawXBM(0, 0, width, height, bmp);
   u8g2.sendBuffer();
 }
+
 void Display::loop()
 {
-  
+
   if (millis() - dtime > 1000)
   {
     dtime = millis();
     getLocalTime();
     this->drawHome();
+
+    if (dtime - weather.time > 60000)
+      getWeather();
+
     /*
     if (millis() - this->_freeTime > 10000)
     {

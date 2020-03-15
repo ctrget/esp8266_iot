@@ -32,18 +32,34 @@ public:
       this->hddCount = 0;
     }
   };
+
+  struct Weather
+  {
+    ulong time;
+    char city[20];
+    char wea[20];
+    char tem[4];
+
+    Weather()
+    {
+      this->time = 0;
+    }
+
+  };
+  
   
   Display();
   void init();
-  void showTest();
   void drawXBM(uint8_t width, uint8_t height, uint8_t *bmp);
   int printf(const char *format, ...);
   void loop();
+  void getWeather();
   void drawHome();
   void drawDashBorad();
   void clearDisplay();
   void refresh();
   SysInfo info;
+  Weather weather;
   
 
 private:

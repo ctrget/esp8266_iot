@@ -71,6 +71,7 @@ void UdpServer::udp_loop()
       }
       case PACKET_TOGGLE_DISPLAY:
       {
+        /*
         bDisplay = !bDisplay;
         char ti = bDisplay ? 1 : 0;
         if (bDisplay)
@@ -80,6 +81,7 @@ void UdpServer::udp_loop()
         p = buildPacket(PACKET_TOGGLE_DISPLAY, (char *)&ti, 1);
         sendPacket(p, udp_server.remoteIP(), udp_server.remotePort());
         break;
+        */
       }
       case PACKET_GET_INFO:
       {

@@ -18,7 +18,7 @@ void btn_click()
 
   if (bDisplay)
   {
-    display.showTest();
+    //display.showTest();
   }
   else
     display.clearDisplay();
@@ -93,6 +93,7 @@ void setup(void)
     return;
   }
   
+  writeConfig("/config.json", "wifi_ssid1", "GTX1");
   
   char wifi_ssid[32], wifi_password[16];
   bool bssid = readConfig("/config.json", "wifi_ssid", wifi_ssid);
@@ -123,7 +124,7 @@ void setup(void)
     display.printf("WiFi connected!");
     display.printf("Local IP: %s", WiFi.localIP().toString().c_str());
   }
-
+  
   udp_server.begin(udp_port);
   server.on("/", handleRoot);
   server.on("/init", handleInit);
@@ -135,6 +136,7 @@ void setup(void)
   display.printf("HTTP server started!");
   getNtpTime();
   display.clearDisplay();
+  display.getWeather();
 
 }
 
@@ -149,7 +151,10 @@ void loop(void)
     }
   }
   display.loop();
-  dnsServer.processNextRequest();
+  
+  if (bNeedInit)
+    dnsServer.processNextRequest();
+
   http_loop();
   udpServer.udp_loop();
   delay(1);
