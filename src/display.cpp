@@ -73,6 +73,7 @@ void Display::showTest()
 void Display::drawHome()
 {
   u8g2.firstPage();
+  bool isget = false;
   char *city = new char[16];
   char *wea = new char[16];
   char *tmp = new char[8];
@@ -87,18 +88,40 @@ void Display::drawHome()
       String appid = "82318441";
       String appsecret = "ATmq64SD";
       String weaapi = "https://tianqiapi.com/api?version=v6&appid=" + appid+ "&appsercet=" + appsecret;
+      String json = "";
       WiFiClientSecure client;
-      
+      client.connect(weaapi,80);
+      json =  client.readString();
+      DynamicJsonDocument doc(2048);
+      DeserializationError error = deserializeJson(doc, json);
+      if (error)
+      {
+        isget = false;
+        return;
+      }
+      city = doc["city"];
+      wea = doc["wea"];
+      tmp = doc["tem"];
+      isget = true;
     }
-    
     u8g2.setDrawColor(1);
+    if (isget)
+    {
+      //城市 天气情况
+      u8g2.setFont(u8g2_font_wqy12_t_gb2312a);
+      u8g2.drawUTF8(5,58,city);
+      u8g2.drawUTF8(75,58,wea);
+      //温度
+      u8g2.setFont(u8g2_font_wqy13_t_gb2312a);
+      u8g2.drawUTF8(37,58,tmp);
+    }else
+    {
+      u8g2.setFont(u8g2_font_wqy12_t_gb2312a);
+      u8g2.drawUTF8(5,58,"正在获取天气信息");
+    }
     //获取时间
     sprintf(nowdata, "%d-%02d-%02d", (localTime.tm_year) + 1900, (localTime.tm_mon) + 1, localTime.tm_mday);
     sprintf(nowtime," %02d:%02d:%02d", localTime.tm_hour, localTime.tm_min, localTime.tm_sec);
-    //城市 天气情况
-    u8g2.setFont(u8g2_font_wqy12_t_gb2312a);
-    u8g2.drawUTF8(5,58,city);
-    u8g2.drawUTF8(75,58,wea);
     //星期日
     u8g2.setFont(u8g2_font_wqy13_t_gb2312a);
     u8g2.drawUTF8(80,16,"星期日");
@@ -108,9 +131,6 @@ void Display::drawHome()
     //时间
     u8g2.setFont(u8g2_font_fub20_tn);
     u8g2.drawStr(0,41,nowtime);
-    //温度
-    u8g2.setFont(u8g2_font_wqy13_t_gb2312a);
-    u8g2.drawUTF8(37,58,tmp);
     u8g2.sendBuffer();
     //释放资源
     delete[] nowdata;
@@ -226,13 +246,13 @@ void Display::loop()
     dtime = millis();
     getLocalTime();
     this->drawHome();
+    /*
     if (millis() - this->_freeTime > 10000)
     {
       this->_freeTime = millis();
       bDisplay = false;
       display.clearDisplay();
     }
-    /*
     if (bDisplay)
     {
       this->drawDashBorad();
