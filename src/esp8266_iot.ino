@@ -4,7 +4,7 @@ unsigned long otime = 0;
 void ICACHE_RAM_ATTR btn_click();
 struct tm localTime;
 bool bNeedInit = true;
-bool bDisplay = true;
+int tDisplay = 0;
 Display display;
 DNSServer dnsServer;
 UdpServer udpServer;
@@ -12,6 +12,7 @@ const IPAddress apIP(192, 168, 1, 1);
 const byte DNS_PORT = 53;
 void btn_click()
 {
+  /*
   int gpio_d5 = digitalRead(D5);
   if (gpio_d5)
     bDisplay = !bDisplay;
@@ -22,6 +23,7 @@ void btn_click()
   }
   else
     display.clearDisplay();
+    */
 }
 
 void getNtpTime()

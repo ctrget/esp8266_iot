@@ -100,7 +100,7 @@ void UdpServer::udp_loop()
         memcpy(bmp, rxp.data + 2, rxp.len - 2);
         display.drawXBM(width, height, bmp);
         display.refresh();
-        bDisplay = false;
+        tDisplay = 2;
         delete[] bmp;
         break;
       }
@@ -200,7 +200,7 @@ void UdpServer::udp_loop()
           }
         }
         memcpy(&display.info, &sysInfo, sizeof(Display::SysInfo));
-        bDisplay = true;
+        tDisplay = 1;
         display.refresh();
         delete[] js;
         break;

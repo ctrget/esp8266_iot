@@ -331,22 +331,30 @@ void Display::loop()
   {
     dtime = millis();
     getLocalTime();
-    this->drawHome();
 
-    if (dtime - weather.time > 60000)
-      getWeather();
 
-    /*
+    
     if (millis() - this->_freeTime > 10000)
     {
       this->_freeTime = millis();
-      bDisplay = false;
-      display.clearDisplay();
+      tDisplay = 0;
     }
-    if (bDisplay)
+
+    if (tDisplay == 0)
+    {
+      this->drawHome();
+
+      if (dtime - weather.time > 60000)
+      getWeather();
+    }
+    else if (tDisplay == 1)
     {
       this->drawDashBorad();
       this->_displayTime++;
-    }*/
+    }
+
+    
+    
+
   }
 }

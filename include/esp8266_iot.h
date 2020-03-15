@@ -32,7 +32,7 @@ extern struct tm localTime;
 extern Display display;
 extern UdpServer udpServer;
 extern bool bNeedInit;
-extern bool bDisplay;
+extern int tDisplay;
 
 bool getLocalTime();
 int scanWIFI(WifiData* wdata, int len);
