@@ -9,11 +9,12 @@ bool readConfig(String path, String key, char* value)
   
   if (configFile)
   {
+    /*
     String str;
     str = configFile.readString();
     Serial.printf("rad:%s\r", str.c_str());
     configFile.seek(0);
-
+    */
     DeserializationError error = deserializeJson(doc, configFile);
     configFile.close();
 
@@ -29,11 +30,9 @@ bool readConfig(String path, String key, char* value)
   }
 
 
-
-
   if (!doc[key])
   {
-    display.printf("Failed to serial file");
+    Serial.printf("Failed to read config key:%s", key.c_str());
     return false;
   }
     
