@@ -4,20 +4,11 @@
 
 bool readConfig(String path, String key, char* value)
 {
-  DynamicJsonDocument doc(1024);
   File configFile = LittleFS.open(path, "r");
   
   if (!configFile)
-  {
-    /*
-    String str;
-    str = configFile.readString();
-    Serial.printf("rad:%s\r", str.c_str());
-    configFile.seek(0);
-    */
-   //DeserializationError error = deserializeJson(doc, configFile);
     return false; 
-  }
+  
 
   String json = configFile.readString();
   Serial.printf("json:%s", json.c_str());
@@ -29,7 +20,7 @@ bool readConfig(String path, String key, char* value)
     return false;
   }
 
-  if (JSON.typeof(jo[key]) == "undefined")
+  if (!jo.hasOwnProperty(key))
   {
     Serial.printf("Failed to read config key:%s", key.c_str());
     return false;
@@ -44,7 +35,6 @@ bool readConfig(String path, String key, char* value)
 bool writeConfig(String path, String key, String value)
 {
 
-  //DynamicJsonDocument doc(1024);
   JSONVar jo;
 
   File configFile;
@@ -52,7 +42,6 @@ bool writeConfig(String path, String key, String value)
   if (LittleFS.exists(path))
   {
     configFile = LittleFS.open(path, "r+");
-    //deserializeJson(doc, configFile);
     String json = configFile.readString();
     jo = JSON.parse(json);
   }
@@ -65,9 +54,21 @@ bool writeConfig(String path, String key, String value)
   
   jo[key] = value;
   configFile.seek(0);
-  //serializeJson(doc, configFile);
   String json = JSON.stringify(jo);
   configFile.write(json.c_str());
+  configFile.close();
+  return true;
+}
+
+
+bool getJson(String path, char* buf)
+{
+  File configFile = LittleFS.open(path, "r");
+  
+  if (!configFile)
+    return false;
+  
+  strcpy(buf, configFile.readString().c_str());
   configFile.close();
   return true;
 }

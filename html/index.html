@@ -13,8 +13,8 @@
 <div class="page form_page js_show">
   <div class="weui-form">
     <div class="weui-form__text-area">
-      <h2 class="weui-form__title">Hello World!</h2>
-      <div class="weui-form__desc">首次使用请配置开发板</div>
+      <h2 class="weui-form__title">欢迎使用!</h2>
+      <div class="weui-form__desc">开发板参数设置</div>
     </div>
     <div class="weui-form__control-area">
       <div class="weui-cells__group weui-cells__group_form">
@@ -34,6 +34,34 @@
             <div class="weui-cell__hd"><label class="weui-label">密码</label></div>
             <div class="weui-cell__bd">
                 <input id="password" name="wifi-password" type="password" class="weui-input" pattern="[A-z]*" maxlength="16" placeholder="填写热点的密码">
+            </div>
+          </div>
+		  
+		  <div class="weui-cells__title">API相关</div>
+
+		  <div class="weui-cells">
+            <a class="weui-cell  weui-cell_access" href="http://tianqiapi.com/">
+                <div class="weui-cell__bd">
+                    <p>点击申请天气API接口</p>
+                </div>
+                <div class="weui-cell__ft">
+                </div>
+            </a>
+        </div>
+		
+
+		
+		<div class="weui-cell weui-cell_active">
+            <div class="weui-cell__hd"><label class="weui-label">APPID</label></div>
+            <div class="weui-cell__bd">
+                <input id="appid" name="weather_appid" class="weui-input" pattern="[A-z]*" maxlength="17" placeholder="填写天气APPID">
+            </div>
+          </div>
+		  
+		  <div class="weui-cell weui-cell_active">
+            <div class="weui-cell__hd"><label class="weui-label">APPSECRET</label></div>
+            <div class="weui-cell__bd">
+                <input id="appsecret" name="weather_appsecret" class="weui-input" pattern="[A-z]*" maxlength="17" placeholder="填写天气APPSECRET">
             </div>
           </div>
 		  
@@ -153,26 +181,27 @@
 		}
 		
 		
-		function initConfig()
+	
+		function saveConfig()
 		{
-		
-		    var ssid = $("#ssid").val();
-			var pass = $("#password").val();
-
+		    var data= {};
+		    data.wifi_ssid = $("#ssid").val();
+			data.wifi_password = $("#password").val();
+			data.weather_appid = $("#appid").val();
+            data.weather_appsecret = $("#appsecret").val();
 			
-			if (ssid == "" || pass == "")
+			if (data.wifi_ssid == "" || data.wifi_password == "" || data.weather_appid == "" || data.weather_appsecret == "")
 			{
 			    weui.topTips('请输入配置!');
 				return;
 			}
 			
-			var data= {};
-			data.wifi_ssid = ssid;
-			data.wifi_password = pass;
-			data.method = "init_config";
+			data.method = "save_config";
 			doAjax("/form", data);
-
 		}
+		
+		
+		
 		
 		function reset()
 		{
@@ -189,6 +218,30 @@
 		
  $(function(){
 
+      $.ajax({
+            type : "GET",
+            contentType: "application/json",
+            url : "/api?get_config",
+            data : JSON.stringify(""),
+            success : function(result) 
+			{
+			  console.log(result);
+			    if (result.code == 0)
+				{
+				  var data = result.data;
+				   $("#ssid").val(data.wifi_ssid);
+				   $("#password").val(data.wifi_password);
+				   $("#appid").val(data.weather_appid);
+				   $("#appsecret").val(data.weather_appsecret);
+				}
+            },
+            error : function(e){
+                console.log(e.status);
+                console.log(e.responseText);
+            }
+        });
+
+	  
       var $input = $('.weui-input');
       $input.on('input', function(){
         if ($input.val()){
@@ -202,7 +255,7 @@
         if ($(this).hasClass('weui-btn_disabled')) return;
 
         $('.page.cell').removeClass('slideIn');
-        initConfig();
+        saveConfig();
 		
 
       });

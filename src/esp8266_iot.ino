@@ -92,9 +92,7 @@ void setup(void)
     display.printf("LittleFS mount failed!");
     return;
   }
-  
-  writeConfig("/config.json", "wifi_ssid2", "GTX2");
-  
+
   char wifi_ssid[32], wifi_password[16];
   bool bssid = readConfig("/config.json", "wifi_ssid", wifi_ssid);
   bool bpass = readConfig("/config.json", "wifi_password", wifi_password);
@@ -136,10 +134,7 @@ void setup(void)
   display.printf("HTTP server started!");
   getNtpTime();
   display.clearDisplay();
-  display.getWeather();
-
-
- 
+  display.ready();
 
 }
 

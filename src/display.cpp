@@ -20,6 +20,7 @@
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/U8X8_PIN_NONE);
 unsigned long dtime = 0;
 HTTPClient http;
+char weatherUrl[96];
 
 Display::Display()
 {
@@ -35,6 +36,22 @@ void Display::init()
   this->_fontSize = 9;
   this->_strPos = this->_fontSize;
   u8g2.enableUTF8Print();
+}
+
+void Display::ready()
+{
+  char appid[16];
+  char appsecret[16] ;
+  
+  if (!(readConfig("/config.json", "weather_appid", appid) && readConfig("/config.json", "weather_appsecret", appsecret)))
+  {
+    Serial.println("Weather read config error!");
+    return;
+  }
+
+  sprintf(weatherUrl, "http://tianqiapi.com/api?version=v6&appid=%s&appsecret=%s", appid, appsecret);
+  Serial.println(weatherUrl);
+  getWeather();
 }
 
 int Display::printf(const char *format, ...)
@@ -62,22 +79,6 @@ int Display::printf(const char *format, ...)
 }
 
 
-int Display::getWeek(int year, int month, int day)
-{
-
-  if (month < 3)
-  {
-    year-=1;
-    month+=12;
-  }
-
-  //wchar_t b[7][10]={wchar_t("星期日"), wchar_t("星期一"), wchar_t("星期二"), wchar_t("星期三"), wchar_t("星期四"), wchar_t("星期五"), wchar_t("星期六")};
-
-  int c = int(year/100), y = year - 100 * c;
-  int w=int(c/4) - 2 * c + y + int(y / 4) + (26 * (month + 1) / 10) + day - 1;
-  w=(w % 7 + 7)% 7;
-  return w;
-}
 
 void Display::clearDisplay()
 {
@@ -92,17 +93,15 @@ void Display::refresh()
 
 void Display::getWeather()
 {
-  String appid = "82318441";
-  String appsecret = "ATmq64SD";
-  String apiUrl = "http://tianqiapi.com/api?version=v6&appid="+ appid + "&appsecret=" + appsecret;
+
+
   String json = "";
 
-  if (weather.time == 0)
-    u8g2.drawUTF8(5, 58, "正在获取天气信息");
+
 
   Serial.print("[HTTP] begin...\n");
 
-    if (http.begin(apiUrl)) 
+    if (http.begin(weatherUrl)) 
     {
 
       Serial.print("[HTTP] GET...\n");
@@ -116,13 +115,16 @@ void Display::getWeather()
 
         if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY)
         {
-
+          
           json = http.getString();
+          
           JSONVar jo = JSON.parse(json);
     
           if (JSON.typeof(jo) != "undefined")
           {
-            Serial.printf("aaaaaaaaaaaaaaaaaaaaaaaaaa");
+            if (jo.hasOwnProperty("errcode"))
+              return;
+            Serial.println(json);
             strcpy(weather.city, jo["city"]);
             strcpy(weather.wea, jo["wea"]);
             strcpy(weather.tem, jo["tem"]);
@@ -158,20 +160,57 @@ void Display::drawHome()
   {
     char *nowdata = new char[32];
     char *nowtime = new char[32];
-    String tem = String( weather.tem) + "℃";
-    //城市 天气情况
-    u8g2.setFont(u8g2_font_wqy12_t_gb2312a);
-    u8g2.drawUTF8(5, 58, weather.city);
-    u8g2.drawUTF8(85, 58, weather.wea);
-    //温度
-    u8g2.setFont(u8g2_font_wqy13_t_gb2312a);
-    u8g2.drawUTF8(52, 58,tem.c_str());
+
+    if (weather.time > 0)
+    {
+      String tem = String(weather.tem) + "℃";
+      //城市 天气情况
+      u8g2.setFont(u8g2_font_wqy12_t_gb2312a);
+      u8g2.drawUTF8(5, 58, weather.city);
+      u8g2.drawUTF8(85, 58, weather.wea);
+      //温度
+      u8g2.setFont(u8g2_font_wqy13_t_gb2312a);
+      u8g2.drawUTF8(52, 58, tem.c_str());
+    }
+    else
+    {
+      u8g2.drawUTF8(5, 58, "正在获取天气信息");
+    }
+    
+
     //获取时间
     sprintf(nowdata, "%d-%02d-%02d", (localTime.tm_year) + 1900, (localTime.tm_mon) + 1, localTime.tm_mday);
     sprintf(nowtime, " %02d:%02d:%02d", localTime.tm_hour, localTime.tm_min, localTime.tm_sec);
-    //星期日
+ 
     u8g2.setFont(u8g2_font_wqy13_t_gb2312a);
-    u8g2.drawUTF8(80, 16, "星期日");
+    
+
+    switch(localTime.tm_wday)
+    {
+      case 0:
+        u8g2.drawUTF8(80, 16, "星期日");
+      break;
+      case 1:
+        u8g2.drawUTF8(80, 16, "星期一");
+      break;
+      case 2:
+        u8g2.drawUTF8(80, 16, "星期二");
+      break;
+      case 3:
+        u8g2.drawUTF8(80, 16, "星期三");
+      break;
+      case 4:
+        u8g2.drawUTF8(80, 16, "星期四");
+      break;
+      case 5:
+        u8g2.drawUTF8(80, 16, "星期五");
+      break;
+      case 6:
+        u8g2.drawUTF8(80, 16, "星期六");
+      break;
+    }
+
+ 
     //日期
     u8g2.setFont(u8g2_font_wqy16_t_gb2312a);
     u8g2.drawUTF8(0, 16, nowdata);
