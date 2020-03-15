@@ -50,9 +50,10 @@ public:
   
   Display();
   void init();
+   void loop();
   void drawXBM(uint8_t width, uint8_t height, uint8_t *bmp);
   int printf(const char *format, ...);
-  void loop();
+  int getWeek(int year, int month, int day)
   void getWeather();
   void drawHome();
   void drawDashBorad();

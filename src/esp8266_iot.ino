@@ -138,6 +138,9 @@ void setup(void)
   display.clearDisplay();
   display.getWeather();
 
+
+ 
+
 }
 
 void loop(void) 

@@ -36,6 +36,7 @@ void Display::init()
   this->_strPos = this->_fontSize;
   u8g2.enableUTF8Print();
 }
+
 int Display::printf(const char *format, ...)
 {
   u8g2.setDrawColor(1);
@@ -59,6 +60,25 @@ int Display::printf(const char *format, ...)
   delete[] str;
   return ret;
 }
+
+
+int Display::getWeek(int year, int month, int day)
+{
+
+  if (month < 3)
+  {
+    year-=1;
+    month+=12;
+  }
+
+  //wchar_t b[7][10]={wchar_t("星期日"), wchar_t("星期一"), wchar_t("星期二"), wchar_t("星期三"), wchar_t("星期四"), wchar_t("星期五"), wchar_t("星期六")};
+
+  int c = int(year/100), y = year - 100 * c;
+  int w=int(c/4) - 2 * c + y + int(y / 4) + (26 * (month + 1) / 10) + day - 1;
+  w=(w % 7 + 7)% 7;
+  return w;
+}
+
 void Display::clearDisplay()
 {
   u8g2.clearDisplay();
@@ -79,7 +99,7 @@ void Display::getWeather()
 
   if (weather.time == 0)
     u8g2.drawUTF8(5, 58, "正在获取天气信息");
-    
+
   Serial.print("[HTTP] begin...\n");
 
     if (http.begin(apiUrl)) 
