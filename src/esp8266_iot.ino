@@ -93,7 +93,7 @@ void setup(void)
     return;
   }
   
-  writeConfig("/config.json", "wifi_ssid1", "GTX1");
+  writeConfig("/config.json", "wifi_ssid2", "GTX2");
   
   char wifi_ssid[32], wifi_password[16];
   bool bssid = readConfig("/config.json", "wifi_ssid", wifi_ssid);
