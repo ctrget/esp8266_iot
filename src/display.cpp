@@ -132,24 +132,20 @@ void Display::drawHome()
 {
 
   u8g2.firstPage();
-  bool isget = false;
   u8g2.setDrawColor(1);
   u8g2.setFont(u8g2_font_wqy12_t_gb2312a);
-  int updatewea = localTime.tm_min + 30;
-
   do
   {
     char *nowdata = new char[32];
     char *nowtime = new char[32];
-
+    String tem = String( weather.tem) + "℃";
     //城市 天气情况
     u8g2.setFont(u8g2_font_wqy12_t_gb2312a);
     u8g2.drawUTF8(5, 58, weather.city);
-    u8g2.drawUTF8(75, 58, weather.wea);
+    u8g2.drawUTF8(85, 58, weather.wea);
     //温度
     u8g2.setFont(u8g2_font_wqy13_t_gb2312a);
-    u8g2.drawUTF8(37, 58, weather.tem);
-
+    u8g2.drawUTF8(52, 58,tem.c_str());
     //获取时间
     sprintf(nowdata, "%d-%02d-%02d", (localTime.tm_year) + 1900, (localTime.tm_mon) + 1, localTime.tm_mday);
     sprintf(nowtime, " %02d:%02d:%02d", localTime.tm_hour, localTime.tm_min, localTime.tm_sec);
