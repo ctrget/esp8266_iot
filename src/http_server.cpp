@@ -77,13 +77,13 @@ void handleForm()
         server.send(405, "text/html", "Method Not Allowed");
       const String wifi_ssid =  server.arg("wifi_ssid");
       const String wifi_password =  server.arg("wifi_password");
-      char* json = new char[128];
-      sprintf(json, "{wifi_ssid:\"%s\", wifi_password:\"%s\"}", wifi_ssid.c_str(), wifi_password.c_str());
-      if (!writeConfig("/config.json", json))
+
+      if (!(writeConfig("/config.json", "wifi_ssid", wifi_ssid) && writeConfig("/config.json", "wifi_password", wifi_password)))
       {
         server.send(200, "application/json", "{\"code\":1,\"msg\":\"write config error!\"}");
         return;
       }
+      
       server.send(200, "application/json", "{\"code\":0,\"msg\":\"Config saved, system will be restart!\"}");
       delay(1000);
       ESP.restart();

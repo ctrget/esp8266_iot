@@ -2,8 +2,7 @@
 #define CONFIG_H
 
 
-
-bool readConfig(char* path, char* section, char* value);
-bool writeConfig(char* path, char* js);
+bool writeConfig(String path, String key, String value);
+bool readConfig(String path, String key, char* value);
 
 #endif

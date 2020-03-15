@@ -74,20 +74,26 @@ void initAP()
 
 void setup(void) 
 {
+  Serial.begin(115200);
   pinMode(D5, INPUT);
   attachInterrupt(digitalPinToInterrupt(D5), btn_click, RISING);
   localTime.tm_year = 0;
   display.init();
   int timeout = 0;
+
+
   //led
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, 1);
   display.printf("Mount LittleFS...");
+
   if (!LittleFS.begin())
   {
     display.printf("LittleFS mount failed!");
     return;
   }
+  
+  
   char wifi_ssid[32], wifi_password[16];
   bool bssid = readConfig("/config.json", "wifi_ssid", wifi_ssid);
   bool bpass = readConfig("/config.json", "wifi_password", wifi_password);
