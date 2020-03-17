@@ -26,7 +26,7 @@ bool readConfig(String path, String key, char* value)
     return false;
   }
     
-
+  
   strcpy(value, jo[key]);
   return true;
 }

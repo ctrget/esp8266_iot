@@ -9,6 +9,7 @@ extern unsigned int udp_port;
 #define PACKET_ALIVE 0X0
 #define PACKET_OK    0X1
 #define PACKET_FAIL  0X2
+#define PACKET_UPDATE  0X3
 #define PACKET_DEBUG 0X4
 
 
