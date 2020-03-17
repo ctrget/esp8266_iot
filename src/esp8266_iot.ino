@@ -107,8 +107,7 @@ void setup(void)
   else
   {
     display.printf("Init STA mode...");
-    display.printf("connecting to %s");
-    display.printf(wifi_ssid);
+    display.printf("connecting to %s\r",wifi_ssid);
     WiFi.mode(WIFI_STA);
     WiFi.begin(wifi_ssid, wifi_password);
     while (WiFi.status() != WL_CONNECTED) 
