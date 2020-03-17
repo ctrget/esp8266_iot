@@ -55,6 +55,7 @@ public:
   void drawXBM(uint8_t width, uint8_t height, uint8_t *bmp);
   int printf(const char *format, ...);
   void getWeather();
+  void drawProgress(int progress, String caption);
   void drawHome();
   void drawDashBorad();
   void clearDisplay();

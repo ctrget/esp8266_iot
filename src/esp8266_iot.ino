@@ -92,8 +92,8 @@ void update_finished()
 
 void update_progress(int cur, int total)
 {
-  Serial.printf("CALLBACK:  HTTP update process at %d of %d bytes...\n", cur, total);
-  display.printf("CALLBACK:  HTTP update process at %d of %d bytes...\n", cur, total);
+  int progress = round((float)cur / total * 100);
+  display.drawProgress(progress, "正在升级,请勿断电!");
 }
 
 void update_error(int err)

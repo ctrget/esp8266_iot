@@ -149,6 +149,25 @@ void Display::getWeather()
 
 }
 
+
+void Display::drawProgress(int progress, String caption)
+{
+  u8g2.setFont(u8g2_font_wqy12_t_gb2312a);
+  u8g2.setDrawColor(1);
+  u8g2.firstPage();
+  
+  do
+  {
+    u8g2.drawUTF8(0, 12, caption.c_str());
+    u8g2.drawRFrame(11, 26, 101, 20, 2);
+    u8g2.drawBox(12, 26, progress, 19);
+
+  } while(u8g2.nextPage());
+  
+
+
+}
+
 void Display::drawHome()
 {
 
