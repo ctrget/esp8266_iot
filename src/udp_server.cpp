@@ -28,7 +28,8 @@ void UdpServer::udp_loop()
   UdpServer::Packet *p;
   if (millis() - utime > 5000)
   {
-    p = buildPacket(0x0);
+    String md5 = ESP.getSketchMD5();
+    p = buildPacket(PACKET_ALIVE, md5.c_str(), 32);
     sendPacket(p, IPAddress(255, 255, 255, 255), udp_port);
     utime = millis();
   }
@@ -54,6 +55,14 @@ void UdpServer::udp_loop()
     memcpy(&rxp, rxBuffer, n);
     switch (rxp.cmd)
     {
+      case PACKET_UPDATE:
+      {
+        p = buildPacket(PACKET_UPDATE);
+        sendPacket(p, udp_server.remoteIP(), udp_server.remotePort());
+        updateAddr = udp_server.remoteIP();
+        bNeedUpdate = true;
+        break;
+      }
       case PACKET_REBOOT:
       {
         p = buildPacket(PACKET_REBOOT);

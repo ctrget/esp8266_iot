@@ -50,7 +50,6 @@ void Display::ready()
   }
 
   sprintf(weatherUrl, "http://tianqiapi.com/api?version=v6&appid=%s&appsecret=%s", appid, appsecret);
-  Serial.println(weatherUrl);
   getWeather();
 }
 
@@ -124,7 +123,7 @@ void Display::getWeather()
           {
             if (jo.hasOwnProperty("errcode"))
               return;
-            Serial.println(json);
+
             strcpy(weather.city, jo["city"]);
             strcpy(weather.wea, jo["wea"]);
             strcpy(weather.tem, jo["tem"]);

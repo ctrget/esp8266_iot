@@ -12,6 +12,7 @@
 #include <U8g2lib.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
+#include <ESP8266httpUpdate.h>
 #include <ESP8266WebServer.h>
 #include <DNSServer.h>
 #include "config.h"
@@ -32,6 +33,8 @@ extern struct tm localTime;
 extern Display display;
 extern UdpServer udpServer;
 extern bool bNeedInit;
+extern bool bNeedUpdate;
+extern IPAddress updateAddr;
 extern int tDisplay;
 
 bool getLocalTime();
