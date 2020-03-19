@@ -7,30 +7,27 @@ public:
   struct SysInfo
   {
 
-    char cpuClock[4];
-    int cpuLoad;
-    char cpuTemp[4];
-    char cpuSpeed[5];
-    char cpuVolt[5];
-    char cpuPower[7];
+    char cpuClock[4] = {0};
+    int cpuLoad = 0;
+    char cpuTemp[4] = {0};
+    char cpuSpeed[5] = {0};
+    char cpuVolt[5] = {0};
+    char cpuPower[7] = {0};
 
-    char gpuClock[4];
-    int gpuLoad;
-    char gpuTemp[4];
-    char gpuSpeed[5];
-    char gpuVolt[5];
+    char gpuClock[4] = {0};
+    int gpuLoad = 0;
+    char gpuTemp[4] = {0};
+    char gpuSpeed[5] = {0};
+    char gpuVolt[5] = {0};
 
-    int memUsage;
-    int vmemUsage;
-    char boardTemp[4];
-    int gpuTDP;
+    int memUsage = 0;
+    int vmemUsage = 0;
+    char boardTemp[4] = {0};
+    int gpuTDP = 0;
 
-    int hddCount;
-    int hddTemp[2];
-    SysInfo()
-    {
-      this->hddCount = 0;
-    }
+    int hddCount = 0;
+    int hddTemp[2] = {0};
+
   };
 
   struct Weather

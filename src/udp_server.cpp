@@ -117,28 +117,30 @@ void UdpServer::udp_loop()
       {
         char *js = new char[rxp.len];
         memcpy(js, rxp.data, rxp.len);
-        DynamicJsonDocument doc(1024);
-        DeserializationError error = deserializeJson(doc, js);
-        if (error)
-        {
-          display.printf("parse json error!");
+        JSONVar jo = JSON.parse(js);
+    
+        if (JSON.typeof(jo) == "undefined")
           return;
-        }
-        const char* cpuClock = doc["SCPUCLK"];
-        const char* cpuLoad = doc["SCPUUTI"];
-        const char* cpuTemp = doc["TCPU"];
-        const char* cpuSpeed = doc["FCPU"];
-        const char* cpuVolt = doc["VCPU"];
-        const char* cpuPower = doc["PCPUPKG"];
-        const char* gpuClock = doc["SGPU1CLK"];
-        const char* gpuLoad = doc["SGPU1UTI"];
-        const char* gpuTemp = doc["TGPU1DIO"];
-        const char* gpuSpeed = doc["FGPU1"];
-        const char* gpuVolt = doc["VGPU1"];
-        const char* memUsage = doc["SMEMUTI"];
-        const char* vmemUsage = doc["SVMEMUSAGE"];
-        const char* boardTemp = doc["TMOBO"];
-        const char* gpuTDP = doc["PGPU1TDPP"];
+        
+        
+        const char* cpuClock = jo["SCPUCLK"];
+        const char* cpuLoad = jo["SCPUUTI"];
+        const char* cpuTemp = jo["TCPU"];
+        const char* cpuSpeed = jo["FCPU"];
+        const char* cpuVolt = jo["VCPU"];
+        const char* cpuPower = jo["PCPUPKG"];
+        const char* gpuClock = jo["SGPU1CLK"];
+        const char* gpuLoad = jo["SGPU1UTI"];
+        const char* gpuTemp = jo["TGPU1DIO"];
+        const char* gpuSpeed = jo["FGPU1"];
+        const char* gpuVolt = jo["VGPU1"];
+        const char* memUsage = jo["SMEMUTI"];
+        const char* vmemUsage = jo["SVMEMUSAGE"];
+        const char* boardTemp = jo["TMOBO"];  
+        const char* gpuTDP = jo["PGPU1TDPP"];
+        
+
+
         Display::SysInfo sysInfo;
         if (cpuClock)
         {
@@ -185,10 +187,11 @@ void UdpServer::udp_loop()
           strcpy(sysInfo.boardTemp, boardTemp);
         if (gpuTDP)
           sysInfo.gpuTDP = atoi(gpuTDP);  
-        const char* hl = doc["hl"];
-        if (hl)
+
+        
+        if (jo.hasOwnProperty("hl"))
         {
-          int hddCount = atoi(hl);
+          int hddCount = atoi(jo["hl"]);
           if (hddCount <= 0)
             return;
           int saveCount = 0;
@@ -197,7 +200,7 @@ void UdpServer::udp_loop()
           {
             char hddName[6];
             sprintf(hddName, "THDD%d", i + 1);
-            const char* hdds = doc[hddName];
+            const char* hdds = jo[hddName];
             if (saveCount >= 2)
               break;
             if (hdds)

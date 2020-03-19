@@ -116,19 +116,21 @@ void Display::getWeather()
         {
           
           json = http.getString();
-          
           JSONVar jo = JSON.parse(json);
     
           if (JSON.typeof(jo) != "undefined")
           {
+            
             if (jo.hasOwnProperty("errcode"))
+              return;
+
+            if (jo["city"] == null || jo["wea"] == null || jo["tem"] == null)
               return;
 
             strcpy(weather.city, jo["city"]);
             strcpy(weather.wea, jo["wea"]);
             strcpy(weather.tem, jo["tem"]);
             weather.time = millis();
-
           }
 
 
@@ -176,7 +178,7 @@ void Display::drawHome()
   u8g2.setFont(u8g2_font_wqy12_t_gb2312a);
   do
   {
-    char *nowdata = new char[32];
+    char *nowdate = new char[32];
     char *nowtime = new char[32];
 
     if (weather.time > 0)
@@ -187,7 +189,6 @@ void Display::drawHome()
       u8g2.drawUTF8(5, 58, weather.city);
       u8g2.drawUTF8(85, 58, weather.wea);
       //温度
-      u8g2.setFont(u8g2_font_wqy13_t_gb2312a);
       u8g2.drawUTF8(52, 58, tem.c_str());
     }
     else
@@ -197,10 +198,9 @@ void Display::drawHome()
     
 
     //获取时间
-    sprintf(nowdata, "%d-%02d-%02d", (localTime.tm_year) + 1900, (localTime.tm_mon) + 1, localTime.tm_mday);
+    sprintf(nowdate, "%d-%02d-%02d", (localTime.tm_year) + 1900, (localTime.tm_mon) + 1, localTime.tm_mday);
     sprintf(nowtime, " %02d:%02d:%02d", localTime.tm_hour, localTime.tm_min, localTime.tm_sec);
  
-    u8g2.setFont(u8g2_font_wqy13_t_gb2312a);
     
 
     switch(localTime.tm_wday)
@@ -230,14 +230,13 @@ void Display::drawHome()
 
  
     //日期
-    u8g2.setFont(u8g2_font_wqy16_t_gb2312a);
-    u8g2.drawUTF8(0, 16, nowdata);
+    u8g2.drawUTF8(0, 16, nowdate);
     //时间
     u8g2.setFont(u8g2_font_fub20_tn);
     u8g2.drawStr(0, 41, nowtime);
     u8g2.sendBuffer();
     //释放资源
-    delete[] nowdata;
+    delete[] nowdate;
     delete[] nowtime;
   } while (u8g2.nextPage());
 }
@@ -362,8 +361,11 @@ void Display::loop()
     {
       this->drawHome();
 
-      if (dtime - weather.time > 60000)
-      getWeather();
+      if (millis() - weather.time > 60000)
+      {
+        getWeather();
+      }
+      
     }
     else if (tDisplay == 1)
     {

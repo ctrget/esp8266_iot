@@ -30,19 +30,25 @@ void handleAPI()
       server.send(200, "application/json", "{\"code\":1,\"msg\":\"No wifi detected!\"}");
       return;
     }
-    DynamicJsonDocument doc(512);
-    doc["code"] = 0;
-    doc["msg"] = "Scan completed!";
-    JsonArray data = doc.createNestedArray("data");
+
+    JSONVar jo;
+    jo["code"] = 0;
+    jo["msg"] = "Scan completed!";
+    JSONVar ja;
+
     for(int i = 0; i < n; i++)
     {
-      JsonObject jo = data.createNestedObject();
-      jo["ssid"] = (wdata + i)->ssid;
-      jo["rssi"] = (wdata + i)->rssi;
-      jo["encrypt"] = (wdata + i)->encrypt;
+      JSONVar ji;
+      ji["ssid"] = (wdata + i)->ssid;
+      ji["rssi"] = (wdata + i)->rssi;
+      ji["encrypt"] = (wdata + i)->encrypt;
+      ja[i] = ji;
+
     }
+
+    jo["data"] = ja;
     String json;
-    serializeJson(doc, json);
+    json = JSON.stringify(jo);
     server.send(200, "application/json", json.c_str());
     delete[] wdata;
   }

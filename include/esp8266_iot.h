@@ -7,7 +7,6 @@
 #include <time.h>
 #include <FS.h>
 #include <LittleFS.h>
-#include <ArduinoJson.h>
 #include <Arduino_JSON.h>
 #include <U8g2lib.h>
 #include <ESP8266WiFi.h>
