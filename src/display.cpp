@@ -19,7 +19,6 @@
 */
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/U8X8_PIN_NONE);
 unsigned long dtime = 0;
-HTTPClient http;
 char weatherUrl[96];
 
 Display::Display()
@@ -92,15 +91,13 @@ void Display::refresh()
 
 void Display::getWeather()
 {
-
-
+  WiFiClient client;
+  HTTPClient http;
   String json = "";
-
-
 
   Serial.print("[HTTP] begin...\n");
 
-    if (http.begin(weatherUrl)) 
+    if (http.begin(client, weatherUrl)) 
     {
 
       Serial.print("[HTTP] GET...\n");

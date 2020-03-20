@@ -11,7 +11,6 @@ bool readConfig(String path, String key, char* value)
   
 
   String json = configFile.readString();
-  Serial.printf("json:%s", json.c_str());
   JSONVar jo = JSON.parse(json);
   configFile.close();
 
