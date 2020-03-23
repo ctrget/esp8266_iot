@@ -53,6 +53,7 @@ bool getLocalTime()
   return false;
 }
 
+
 int scanWIFI(WifiData* wdata, int len)
 {
   int n = WiFi.scanNetworks();
@@ -143,6 +144,7 @@ void setup(void)
       delay(500);
       if (timeout > 20)
       {
+       
         WiFi.disconnect(false);
         initAP();
         break;
@@ -208,11 +210,12 @@ void loop(void)
       getNtpTime();
     }
   }
-  display.loop();
+  
   
   if (bNeedInit)
     dnsServer.processNextRequest();
 
+  display.loop();
   http_loop();
   udpServer.udp_loop();
   delay(1);

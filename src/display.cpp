@@ -198,7 +198,10 @@ void Display::drawHome()
     }
     else
     {
-      u8g2.drawUTF8(5, 58, "正在获取天气信息");
+      if (bNeedInit)
+        u8g2.drawUTF8(0, 58, "请连接热点进行设置");
+      else
+        u8g2.drawUTF8(5, 58, "正在获取天气信息");
     }
     
 
