@@ -11,6 +11,7 @@ bool readConfig(String path, String key, char* value)
   
 
   String json = configFile.readString();
+  //Serial.println(json);
   JSONVar jo = JSON.parse(json);
   configFile.close();
 
@@ -30,6 +31,17 @@ bool readConfig(String path, String key, char* value)
   return true;
 }
 
+bool getJson(String path, char* buf)
+{
+  File configFile = LittleFS.open(path, "r");
+  
+  if (!configFile)
+    return false;
+  
+  strcpy(buf, configFile.readString().c_str());
+  configFile.close();
+  return true;
+}
 
 bool writeConfig(String path, String key, String value)
 {
@@ -59,15 +71,3 @@ bool writeConfig(String path, String key, String value)
   return true;
 }
 
-
-bool getJson(String path, char* buf)
-{
-  File configFile = LittleFS.open(path, "r");
-  
-  if (!configFile)
-    return false;
-  
-  strcpy(buf, configFile.readString().c_str());
-  configFile.close();
-  return true;
-}

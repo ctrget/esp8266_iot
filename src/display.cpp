@@ -19,7 +19,7 @@
 */
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/U8X8_PIN_NONE);
 unsigned long dtime = 0;
-char weatherUrl[96];
+char weatherUrl[128];
 
 Display::Display()
 {
@@ -40,15 +40,23 @@ void Display::init()
 void Display::ready()
 {
   char appid[16];
-  char appsecret[16] ;
-  
+  char appsecret[16];
+  char city[16];
+
   if (!(readConfig("/config.json", "weather_appid", appid) && readConfig("/config.json", "weather_appsecret", appsecret)))
   {
     Serial.println("Weather read config error!");
     return;
   }
 
-  sprintf(weatherUrl, "http://tianqiapi.com/api?version=v6&appid=%s&appsecret=%s", appid, appsecret);
+  readConfig("/config.json", "weather_city", city);
+
+  if(strlen(city) > 0)
+    sprintf(weatherUrl, "http://tianqiapi.com/api?version=v6&appid=%s&appsecret=%s&city=%s", appid, appsecret, city);
+  else
+    sprintf(weatherUrl, "http://tianqiapi.com/api?version=v6&appid=%s&appsecret=%s", appid, appsecret);
+
+    
   getWeather();
 }
 

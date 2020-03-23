@@ -3,7 +3,7 @@ static const char indexPage[] PROGMEM = "<!DOCTYPE html>\
 <head>\
     <meta charset=\"UTF-8\">\
     <meta name=\"viewport\" content=\"width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover\">\
-    <title>WeUI</title>\
+    <title>ESP8266开发板设置</title>\
     <link rel=\"stylesheet\" href=\"https://cdn.bootcss.com/weui/2.2.0/style/weui.min.css\"/>\
 	\
 </head>\
@@ -62,6 +62,23 @@ static const char indexPage[] PROGMEM = "<!DOCTYPE html>\
             <div class=\"weui-cell__hd\"><label class=\"weui-label\">APPSECRET</label></div>\
             <div class=\"weui-cell__bd\">\
                 <input id=\"appsecret\" name=\"weather_appsecret\" class=\"weui-input\" pattern=\"[A-z]*\" maxlength=\"17\" placeholder=\"填写天气APPSECRET\">\
+            </div>\
+          </div>\
+		  \
+		  <div class=\"weui-cells\">\
+            <a class=\"weui-cell  weui-cell_access\" href=\"#\">\
+                <div class=\"weui-cell__bd\">\
+                    <p>如区域判断不正确请设置城市</p>\
+                </div>\
+                <div class=\"weui-cell__ft\">\
+                </div>\
+            </a>\
+        </div>\
+		  \
+		  <div class=\"weui-cell weui-cell_active\">\
+            <div class=\"weui-cell__hd\"><label class=\"weui-label\">城市名称</label></div>\
+            <div class=\"weui-cell__bd\">\
+                <input id=\"city\" name=\"weather_city\" class=\"weui-input\" pattern=\"[A-z]*\" maxlength=\"17\" placeholder=\"填写城市名称\">\
             </div>\
           </div>\
 		  \
@@ -189,6 +206,7 @@ static const char indexPage[] PROGMEM = "<!DOCTYPE html>\
 			data.wifi_password = $(\"#password\").val();\
 			data.weather_appid = $(\"#appid\").val();\
             data.weather_appsecret = $(\"#appsecret\").val();\
+			data.weather_city = $(\"#city\").val();\
 			\
 			if (data.wifi_ssid == \"\" || data.wifi_password == \"\" || data.weather_appid == \"\" || data.weather_appsecret == \"\")\
 			{\

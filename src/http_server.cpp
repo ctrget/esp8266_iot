@@ -35,6 +35,7 @@ void handleAPI()
     jo["code"] = 0;
     jo["msg"] = "Scan completed!";
     JSONVar ja;
+    
 
     for(int i = 0; i < n; i++)
     {
@@ -98,10 +99,8 @@ void handleForm()
     {
       if (!server.hasArg("wifi_ssid") || !server.hasArg("wifi_password"))
         server.send(405, "text/html", "Method Not Allowed");
-      const String wifi_ssid =  server.arg("wifi_ssid");
-      const String wifi_password =  server.arg("wifi_password");
 
-      if (!(writeConfig("/config.json", "wifi_ssid", wifi_ssid) && writeConfig("/config.json", "wifi_password", wifi_password)))
+      if (!(writeConfig("/config.json", "wifi_ssid", server.arg("wifi_ssid")) && writeConfig("/config.json", "wifi_password", server.arg("wifi_password"))))
       {
         server.send(200, "application/json", "{\"code\":1,\"msg\":\"write config error!\"}");
         return;
@@ -116,12 +115,13 @@ void handleForm()
       if (!server.hasArg("wifi_ssid") || !server.hasArg("wifi_password") || !server.hasArg("weather_appid") || !server.hasArg("weather_appsecret"))
         server.send(405, "text/html", "Method Not Allowed");
 
-      const String wifi_ssid =  server.arg("wifi_ssid");
-      const String wifi_password =  server.arg("wifi_password");
-      const String weather_appid = server.arg("weather_appid");
-      const String weather_appsecret = server.arg("weather_appsecret");
-
-      if (!(writeConfig("/config.json", "wifi_ssid", wifi_ssid) && writeConfig("/config.json", "wifi_password", wifi_password) && writeConfig("/config.json", "weather_appid", weather_appid) && writeConfig("/config.json", "weather_appsecret", weather_appsecret)))
+      if (server.hasArg("weather_city"))
+      {
+        writeConfig("/config.json", "weather_city", server.arg("weather_city"));
+      }
+      
+    
+      if (!(writeConfig("/config.json", "wifi_ssid", server.arg("wifi_ssid")) && writeConfig("/config.json", "wifi_password", server.arg("wifi_password")) && writeConfig("/config.json", "weather_appid", server.arg("weather_appid")) && writeConfig("/config.json", "weather_appsecret", server.arg("weather_appsecret"))))
       {
         server.send(200, "application/json", "{\"code\":1,\"msg\":\"write config error!\"}");
         return;
