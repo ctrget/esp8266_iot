@@ -251,6 +251,10 @@
 				   $("#password").val(data.wifi_password);
 				   $("#appid").val(data.weather_appid);
 				   $("#appsecret").val(data.weather_appsecret);
+				   
+				   if (typeof(data.weather_city) != "undefined")
+				     $("#city").val(data.weather_city);
+				   
 				}
             },
             error : function(e){
