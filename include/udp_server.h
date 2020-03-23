@@ -19,6 +19,7 @@ extern unsigned int udp_port;
 #define PACKET_TOGGLE_LED      0X12
 #define PACKET_TOGGLE_DISPLAY  0X13
 #define PACKET_REBOOT          0X14
+#define PACKET_RESET           0X15
 
 class UdpServer
 {

@@ -70,6 +70,15 @@ void UdpServer::udp_loop()
         ESP.restart();
         break;
       }
+      case PACKET_RESET:
+      {
+        LittleFS.format();
+        p = buildPacket(PACKET_RESET);
+        sendPacket(p, udp_server.remoteIP(), udp_server.remotePort());
+        delay(1000);
+        ESP.restart();
+        break;
+      }
       case PACKET_TOGGLE_LED:
       {
         char cled = digitalRead(LED_BUILTIN);
