@@ -1,5 +1,6 @@
 #include "esp8266_iot.h"
 
+
 unsigned long otime = 0;
 void ICACHE_RAM_ATTR btn_click();
 struct tm localTime;
@@ -14,6 +15,8 @@ UdpServer udpServer;
 const byte firmwareVer = 0x1;
 const IPAddress apIP(192, 168, 1, 1);
 const byte DNS_PORT = 53;
+
+
 
 void btn_click()
 {
@@ -114,7 +117,7 @@ void setup(void)
 
   //led
   pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, 1);
+  digitalWrite(LED_BUILTIN, HIGH);
   display.printf("Mount LittleFS...");
 
   if (!LittleFS.begin())
@@ -167,7 +170,7 @@ void setup(void)
   getNtpTime();
   display.clearDisplay();
   display.ready();
-
+  
 }
 
 void loop(void) 
