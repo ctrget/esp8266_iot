@@ -138,13 +138,13 @@ void setup(void)
     display.printf("Connecting To");
     display.printf(wifi_ssid);
     WiFi.mode(WIFI_STA);
+    WiFi.setAutoReconnect(true);
     WiFi.begin(wifi_ssid, wifi_password);
     while (WiFi.status() != WL_CONNECTED) 
     {
       delay(500);
       if (timeout > 20)
       {
-       
         WiFi.disconnect(false);
         initAP();
         break;
