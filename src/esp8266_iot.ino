@@ -1,8 +1,14 @@
 #include "esp8266_iot.h"
+#include <Stepper.h>
 
+// 设置步进电机旋转一圈是多少步
+#define STEPS_PER_ROTOR_REV 32
+const int GEAR_REDUCTION = 64;
+const float STEPS_PER_OUT_REV = STEPS_PER_ROTOR_REV * GEAR_REDUCTION;
+
+Stepper stepper(STEPS_PER_ROTOR_REV, digitalPinToInterrupt(D5), digitalPinToInterrupt(D7), digitalPinToInterrupt(D6), digitalPinToInterrupt(D8));
 
 unsigned long otime = 0;
-void ICACHE_RAM_ATTR btn_click();
 struct tm localTime;
 bool bNeedInit = true;
 bool bNeedUpdate = false;
@@ -15,10 +21,9 @@ UdpServer udpServer;
 const byte firmwareVer = 0x1;
 const IPAddress apIP(192, 168, 1, 1);
 const byte DNS_PORT = 53;
+//PCF8563 rtc;
 
-
-
-void btn_click()
+void ICACHE_RAM_ATTR btn_click()
 {
   /*
   int gpio_d5 = digitalRead(D5);
@@ -49,8 +54,10 @@ bool getLocalTime()
   time_t now;
   time(&now);
   localtime_r(&now, &localTime);
-  if (localTime.tm_year > (2016 - 1900))
+  if (localTime.tm_year > (2019 - 1900))
   {
+    //DateTime now = DateTime(localTime.tm_year, localTime.tm_mon, localTime.tm_mday, localTime.tm_hour, localTime.tm_min, localTime.tm_sec);
+    //rtc.adjust(now);
     return true;
   }
   return false;
@@ -108,8 +115,8 @@ void update_error(int err)
 void setup(void) 
 {
   Serial.begin(115200);
-  pinMode(D5, INPUT);
-  attachInterrupt(digitalPinToInterrupt(D5), btn_click, RISING);
+  //pinMode(D5, INPUT);
+  //attachInterrupt(digitalPinToInterrupt(D5), btn_click, RISING);
   localTime.tm_year = 0;
   display.init();
   int timeout = 0;
@@ -118,7 +125,7 @@ void setup(void)
   //led
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, HIGH);
-  display.printf("Mount LittleFS...");
+  display.printf("Mount LittleFS..............................................................................................................");
 
   if (!LittleFS.begin())
   {
@@ -170,11 +177,98 @@ void setup(void)
   getNtpTime();
   display.clearDisplay();
   display.ready();
+  /*
+  pinMode(D3, INPUT);
+  attachInterrupt(digitalPinToInterrupt(D3), alarm, FALLING);
+  rtc.begin();
+
+  if (!rtc.isrunning()) 
+  {
+    Serial.println("RTC is NOT running!");
+  }
+  else
+  {
+    setAlarm(1);
+  }
+  */
   
+
+  /*
+  pinMode(D5, OUTPUT);
+  pinMode(D6, OUTPUT);
+  pinMode(D7, OUTPUT);
+  digitalWrite(D5, HIGH);
+  digitalWrite(D6, HIGH);
+  digitalWrite(D7, HIGH);
+*/
+
+
+}
+
+void setAlarm(int value)
+{
+
+  /*
+  char buf[100];
+  strncpy(buf, "DD.MM.YYYY hh:mm:ss\0", 100);
+
+  DateTime alarm = rtc.now();
+  alarm.setminute( alarm.minute() + value);
+  Serial.print("Setting alarm: ");
+  strncpy(buf, "DD hh:mm MM\0", 100);
+  Serial.println(alarm.format(buf));
+  rtc.set_alarm( alarm, {AE_M, 0,  0, 0});
+  rtc.on_alarm();
+  */
+}
+
+void ICACHE_RAM_ATTR alarm()
+{
+  Serial.println("WakeUp atmega");
+}
+
+
+void setColor(int red, int green, int blue)
+{
+  analogWrite(D5, (255-red) * 4);
+  analogWrite(D6, (255-green) * 4);
+  analogWrite(D7, (255-blue) * 4);  
+}
+
+void setStepper(int mode)
+{
+  int StepsRequired = STEPS_PER_OUT_REV / 2;
+  stepper.setSpeed(800);
+
+  while(StepsRequired > 0)
+  {
+    int step = mode == 0 ? 1 : -1;
+    stepper.step(step);
+    delay(1);
+    StepsRequired--;
+  }  
+
 }
 
 void loop(void) 
 {
+
+
+  /*
+  setColor(255, 52, 179);  // 黄色
+  delay(1000);  
+
+
+
+    DateTime now = rtc.now();
+    char buf[100];
+    strncpy(buf, "DD.MM.YYYY hh:mm:ss\0", 100);
+    Serial.println(now.format(buf));
+
+    delay(1000);
+  
+  */
+
   while(bNeedUpdate)
   {
     ESPhttpUpdate.setLedPin(LED_BUILTIN, LOW);
@@ -205,11 +299,14 @@ void loop(void)
     
   }
 
-  if (localTime.tm_year < (2016 - 1900) && !bNeedInit)
+  //DateTime rtctime = rtc.now();
+  
+  if (localTime.tm_year < (2019 - 1900) && !bNeedInit)
   {
     if (millis() - otime > 5000)
     {
       otime = millis();
+      Serial.println("get ntp time...");
       getNtpTime();
     }
   }

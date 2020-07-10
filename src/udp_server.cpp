@@ -1,6 +1,8 @@
 #include "esp8266_iot.h"
 #include "udp_server.h"
 
+
+
 uint32_t udp_port = 8266;
 char rxBuffer[UDP_TX_PACKET_MAX_SIZE + 1];
 WiFiUDP udp_server;
@@ -117,9 +119,9 @@ void UdpServer::udp_loop()
         memcpy(&height, rxp.data + 1, 1);
         memcpy(bmp, rxp.data + 2, rxp.len - 2);
         display.drawXBM(width, height, bmp);
+        delete[] bmp;
         display.refresh();
         tDisplay = 2;
-        delete[] bmp;
         break;
       }
       case PACKET_DISPLAY_INFO:

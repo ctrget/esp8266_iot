@@ -5,11 +5,11 @@
    ESP8266 ---  OLED
      3V    ---  VCC
      G     ---  GND
-     D7    ---  D1
-     D5    ---  D0
-     D2orD8---  CS
+     D7    ---  SDA
+     D5    ---  SCL
+     D8    ---  CS
      D1    ---  DC
-     RST   ---  RES
+     RST   ---  D0
 //IC2
      OLED  ---  ESP8266
      VCC   ---  3.3V / 5V
@@ -17,6 +17,12 @@
      SCL   ---  D1(GPIO5)
      SDA   ---  D2(GPIO4)
 */
+
+//I2C
+//U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/U8X8_PIN_NONE);
+//SPI
+//U8G2_SH1122_256X64_F_4W_HW_SPI u8g2(U8G2_R0, D8, D1, D0);
+
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/U8X8_PIN_NONE);
 unsigned long dtime = 0;
 char weatherUrl[128];
@@ -352,6 +358,24 @@ void Display::drawXBM(uint8_t width, uint8_t height, uint8_t *bmp)
 void Display::loop()
 {
 
+  while (true)
+  {
+    u8g2.clearBuffer();
+    u8g2.drawHLine(0, 0, 240);
+    u8g2.drawHLine(0, 10, 240);
+    u8g2.drawHLine(0, 20, 240);
+    u8g2.drawHLine(0, 30, 240);
+    u8g2.drawHLine(0, 40, 240);
+    u8g2.drawHLine(0, 50, 240);
+    u8g2.drawHLine(0, 60, 240);
+    u8g2.sendBuffer();
+    delay(100);
+  }
+  
+
+
+
+
   if (millis() - dtime > 1000)
   {
     dtime = millis();
@@ -369,7 +393,7 @@ void Display::loop()
     {
       this->drawHome();
 
-      if (millis() - weather.time > 60000)
+      if (millis() - weather.time > 7200 * 1000)
       {
         getWeather();
       }
