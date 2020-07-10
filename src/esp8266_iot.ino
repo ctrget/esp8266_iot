@@ -78,7 +78,7 @@ int scanWIFI(WifiData* wdata, int len)
       wdata[i].encrypt = WiFi.encryptionType(i);
     }
   }
-  return n;
+  return len;
 }
 
 void initAP()
