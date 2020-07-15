@@ -88,7 +88,7 @@ void initAP()
   WiFi.softAP("ESP82266_Setup");
   display.printf("WIFI SSID: %s\r","8266_ Setup");
   display.printf("Config URL: %s\r","http://192.168.1.1");
-  dnsServer.start(DNS_PORT, "*", apIP);
+  bool b = dnsServer.start(DNS_PORT, "*", apIP);
 }
 
 void update_started()
@@ -269,6 +269,8 @@ void loop(void)
   
   */
 
+
+
   while(bNeedUpdate)
   {
     ESPhttpUpdate.setLedPin(LED_BUILTIN, LOW);
@@ -300,10 +302,10 @@ void loop(void)
   }
 
   //DateTime rtctime = rtc.now();
-  
-  if (localTime.tm_year < (2019 - 1900) && !bNeedInit)
+
+  if (millis() - otime > 5000)
   {
-    if (millis() - otime > 5000)
+    if (localTime.tm_year < (2019 - 1900) && !bNeedInit)
     {
       otime = millis();
       Serial.println("get ntp time...");
@@ -312,9 +314,10 @@ void loop(void)
   }
   
   
+  
   if (bNeedInit)
     dnsServer.processNextRequest();
-
+  
   display.loop();
   http_loop();
   udpServer.udp_loop();

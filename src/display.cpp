@@ -358,23 +358,6 @@ void Display::drawXBM(uint8_t width, uint8_t height, uint8_t *bmp)
 void Display::loop()
 {
 
-  while (true)
-  {
-    u8g2.clearBuffer();
-    u8g2.drawHLine(0, 0, 240);
-    u8g2.drawHLine(0, 10, 240);
-    u8g2.drawHLine(0, 20, 240);
-    u8g2.drawHLine(0, 30, 240);
-    u8g2.drawHLine(0, 40, 240);
-    u8g2.drawHLine(0, 50, 240);
-    u8g2.drawHLine(0, 60, 240);
-    u8g2.sendBuffer();
-    delay(100);
-  }
-  
-
-
-
 
   if (millis() - dtime > 1000)
   {
